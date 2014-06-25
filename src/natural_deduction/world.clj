@@ -1,8 +1,11 @@
 (ns natural-deduction.core)
 
 (def worlds (atom []))
-(def counter (atom 0))
 (def rules (atom nil))
+
+;counter
+(def hash-counter (atom 0))
+(def object-counter (atom -1))
 
 (defn build-world
   "Get a nested vector as world and transform it.
@@ -18,13 +21,12 @@
    E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 2, :rule nil}]"
   [world]
   (let [flag (atom false)]
-    (reset! counter 0)
     (clojure.walk/postwalk
       (fn [x]
         (if (vector? x)
           x
           {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
-           :hash (swap! counter inc)
+           :hash (swap! hash-counter inc)
            :rule (when (not @flag) :premise)}
           ))
       world)))
@@ -79,11 +81,13 @@
    The transformation (build-world) works internal."
   [new-world]
   (do
-    (reset! counter 0)
+    (reset! hash-counter 0)
+    (reset! object-counter -1)
     (reset! worlds [(vec (build-world new-world))])
     (pretty-printer (last @worlds))))
 
 (defn show-world
+  "Prints the actual world."
   []
   (pretty-printer (last @worlds)))
 
@@ -93,6 +97,7 @@
   (reset! rules (read-string (str "#{" (slurp (clojure.string/replace file "\\" "/")) "}"))))
 
 (defn show-all-foreward-rules
+  "Prints all loaded rules that runs foreward."
   []
   (doseq
     [r (filter :foreward @rules)]
@@ -102,6 +107,7 @@
            "\t\tresult: " (:foreward r)))))
 
 (defn show-all-backward-rules
+  "Prints all loaded rules that runs backward."
   []
   (doseq
     [r (filter :backward @rules)]
@@ -118,7 +124,7 @@
                                    hashes))
                          (flatten (last @worlds))))
         todo (first (filter #(= (:body %) :todo) elems))
-        args (filter #(not= todo %) elems)
+        args (map :body (filter #(not= todo %) elems))
         scope (scope-from (last @worlds) todo)
         elemts-in-scope? (every? true? (map
                                          (fn [x] (some
@@ -129,15 +135,26 @@
         rule-return-index (when rul (.indexOf (:args rul) (if foreward? (:foreward rul) (:backward rul))))
         todo-index (.indexOf elems todo)]
     (cond
-      (not rul) (println "This rule does not exist.")
-      (not= (count hashes) (count elems)) (println "Double used or wrong hashes.")
-      (not= (dec (count elems)) (count args)) (println "Wrong number of \"...\" is chosen. Please choose one \"...\".")
-      (not elemts-in-scope?) (println "At least one element is out of scope.")
-      (not= rule-return-index todo-index) (println "Order does not fit.")
-       ;TODO anwenden auf welt
+      (empty? @worlds) (throw (IllegalArgumentException. "World is empty."))
+      (not rul) (throw (IllegalArgumentException. "This rule does not exist."))
+      (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong hashes."))
+      (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of \"...\" is chosen. Please choose one \"...\"."))
+      (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
+      (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit."))
+      ;;TODO anwenden auf welt
       :else (let [res (apply-rule-1step foreward? rul args)
                   news (filter #(re-find #"_[0-9]+" (str %)) (flatten res)) ; Elements like _0 are new elements.
-                  new-res (prewalk-replace (zipmap news (map #(symbol (str "P" %)) (range))) res)] ;TODO neue Elemente korrekt bilden.
+                  new-res (prewalk-replace (zipmap news (map (fn [_] symbol (str "P" (swap! object-counter inc))) news)) res)]
               (when res
                 new-res)
     ))))
+
+stop
+
+(set-world! '[a INFER b])
+
+(load-rule! "resources/rules/natdec.clj")
+
+(show-world)
+
+(apply-rule! "or-i1" true 1 2)
