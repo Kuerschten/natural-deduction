@@ -2,10 +2,11 @@
 
 (def worlds (atom []))
 (def rules (atom nil))
+(def counter (atom 0))
 
-;counter
-(def hash-counter (atom 0))
-(def object-counter (atom -1))
+(defn- new-number
+  []
+  (swap! counter inc))
 
 (defn build-world
   "Get a nested vector as world and transform it.
@@ -21,13 +22,15 @@
    E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 2, :rule nil}]"
   [world]
   (let [flag (atom false)]
+    (reset! counter 0)
     (clojure.walk/postwalk
       (fn [x]
-        (if (vector? x)
-          x
-          {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
-           :hash (swap! hash-counter inc)
-           :rule (when (not @flag) :premise)}
+        (cond
+          (vector? x) x
+          (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
+          :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
+                 :hash (new-number)
+                 :rule (when (not @flag) :premise)}
           ))
       world)))
 
@@ -81,8 +84,6 @@
    The transformation (build-world) works internal."
   [new-world]
   (do
-    (reset! hash-counter 0)
-    (reset! object-counter -1)
     (reset! worlds [(vec (build-world new-world))])
     (pretty-printer (last @worlds))))
 
@@ -143,18 +144,41 @@
       (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit."))
       ;;TODO anwenden auf welt
       :else (let [res (apply-rule-1step foreward? rul args)
-                  news (filter #(re-find #"_[0-9]+" (str %)) (flatten res)) ; Elements like _0 are new elements.
-                  new-res (prewalk-replace (zipmap news (map (fn [_] symbol (str "P" (swap! object-counter inc))) news)) res)]
-              (when res
-                new-res)
-    ))))
+                  news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
+                  new-res (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res))]
+              (when res (cond
+                          ; a ... -> a b ...
+                          ; TODO immer?
+                          ; mir fällt grad kein plausiebles gegenbeispiel ein...
+                          (= todo (last elems)) 
+                          (let [b  {:body new-res
+                                    :hash (new-number)
+                                    :rule (cons (symbol rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
+                            b) ;TODO Welt ändern
+                
+                          ; ... a -> ... b a ;
+                          ; TODO immer?
+                          ; ... X -> [(not X) ... (contradiction)] X
+                          (= todo (first elems))
+                          (let [b {:body new-res
+                                    :hash (new-number)
+                                    :rule nil}
+                                old-a (last elems)
+                                a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
+                            (list b a))
+                
+                          ; a ... b -> a c b
+                          :else :acb
+    ))))))
 
 stop
 
-(set-world! '[a INFER b])
+(set-world! '[a INFER (a ∧ b)])
 
 (load-rule! "resources/rules/natdec.clj")
 
 (show-world)
 
-(apply-rule! "or-i1" true 1 2)
+(apply-rule! "or-i1" true 1 2) ; a ... -> a b ...
+
+(apply-rule! "and-i1-backward" false 2 6) ; ... a -> ... b a
