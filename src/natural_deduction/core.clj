@@ -6,4 +6,4 @@
 (load "scope")
 (load "apply_rule")
 (load "natdec_rules")
-(load "world")
+(load "proof")

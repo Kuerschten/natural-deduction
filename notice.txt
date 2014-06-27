@@ -1,0 +1,11 @@
+world -> proof
+apply a rule -> proofstep
+:todo -> proofobligation
+line -> step
+rule args -> antecedent-steps (or-e #2)
+reform -> rewrite
+(var i) -> (object/actual/element i)
+worlds: atom -> stack
+globale variablen vermeiden
+worlds.clj -> komplett funktional + neuen Namespace "UI"
+apply_rule.clj -> Zusammensetzen eines Strings -> Zusammensetzen einer Liste

@@ -1,15 +1,13 @@
 (ns natural-deduction.core)
 
-(def worlds (atom []))
-(def rules (atom nil))
 (def counter (atom 0))
 
 (defn- new-number
   []
   (swap! counter inc))
 
-(defn build-world
-  "Get a nested vector as world and transform it.
+(defn build-proof
+  "Get a nested vector as proof and transform it.
 
    Every elemtent becomes a hash-set with body, a hash number and a rule:
    :body is the old element
@@ -20,7 +18,7 @@
    An infer gets the body :todo
 
    E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 2, :rule nil}]"
-  [world]
+  [proof]
   (let [flag (atom false)]
     (reset! counter 0)
     (clojure.walk/postwalk
@@ -32,10 +30,10 @@
                  :hash (new-number)
                  :rule (when (not @flag) :premise)}
           ))
-      world)))
+      proof)))
 
 (defn build-pretty-string
-  "Get a transformed world element and return a pretty String of this element.
+  "Get a transformed proof element and return a pretty String of this element.
    A body with :todo becomes a \"...\"
 
    E.g.  {:body a, :hash 1, :rule :premise} => \"a (#1 premise)\""
@@ -50,13 +48,13 @@
          ")")))
 
 (defn pretty-printer
-  "Gets a transformed world and print it on the stdout.
+  "Gets a transformed proof and print it on the stdout.
    Returns nil."
-  ([world]
-    (pretty-printer world 0))
+  ([proof]
+    (pretty-printer proof 0))
   
-  ([world lvl]
-    (doseq [elem world]
+  ([proof lvl]
+    (doseq [elem proof]
       (if (vector? elem)
         (do
           (dotimes [_ lvl] (print "| "))
@@ -70,38 +68,16 @@
           (dotimes [_ lvl] (print "| "))
           (println (build-pretty-string elem)))))))
 
-(defn undo!
-  "Go one step backward in the history.
-   Go no step backward if the initial state is arrived."
-  []
-  (do
-    (when (second @worlds) (reset! worlds (vec (drop-last @worlds))))
-    (pretty-printer (last @worlds))))
-
-(defn set-world!
-  "Gets an nested vector and initialize the world with it.
-   It is importand to give a untransformed vector!!!
-   The transformation (build-world) works internal."
-  [new-world]
-  (do
-    (reset! worlds [(vec (build-world new-world))])
-    (pretty-printer (last @worlds))))
-
-(defn show-world
-  "Prints the actual world."
-  []
-  (pretty-printer (last @worlds)))
-
-(defn load-rule!
-  "Load a file with rules to use they in the world."
+(defn load-rules
+  "Load a file and returns a hashmap with all rules."
   [file]
-  (reset! rules (read-string (str "#{" (slurp (clojure.string/replace file "\\" "/")) "}"))))
+  (read-string (str "#{" (slurp (clojure.string/replace file "\\" "/")) "}")))
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
-  []
+  [rules]
   (doseq
-    [r (filter :foreward @rules)]
+    [r (filter :foreward rules)]
     (println
       (str (:name r)
            "\t\targuments: " (apply str (interpose ", " (:args r)))
@@ -109,76 +85,62 @@
 
 (defn show-all-backward-rules
   "Prints all loaded rules that runs backward."
-  []
+  [rules]
   (doseq
-    [r (filter :backward @rules)]
+    [r (filter :backward rules)]
     (println
       (str (:name r)
            "\t\targuments: " (apply str (interpose ", " (:args r)))
            "\t\tresult: " (:backward r)))))
 
-(defn apply-rule!
-  [rule foreward? & hashes]
+(defn proof-step
+  [rule proof foreward? & hashes]
   (let [elems (flatten (filter
                          (fn [x] (some
                                    (fn [y] (= (:hash x) y))
                                    hashes))
-                         (flatten (last @worlds))))
+                         (flatten proof)))
         todo (first (filter #(= (:body %) :todo) elems))
         args (map :body (filter #(not= todo %) elems))
-        scope (scope-from (last @worlds) todo)
+        scope (scope-from proof todo)
         elemts-in-scope? (every? true? (map
                                          (fn [x] (some
                                                    (fn [y] (= x y))
                                                    scope))
                                          elems))
-        rul (first (filter #(= rule (:name %)) @rules))
-        rule-return-index (when rul (.indexOf (:args rul) (if foreward? (:foreward rul) (:backward rul))))
+        rule-return-index (when rule (.indexOf (:args rule) (if foreward? (:foreward rule) (:backward rule))))
         todo-index (.indexOf elems todo)]
     (cond
-      (empty? @worlds) (throw (IllegalArgumentException. "World is empty."))
-      (not rul) (throw (IllegalArgumentException. "This rule does not exist."))
       (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong hashes."))
-      (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of \"...\" is chosen. Please choose one \"...\"."))
+      (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
       (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit."))
-      ;;TODO anwenden auf welt
-      :else (let [res (apply-rule-1step foreward? rul args)
+      
+      :else ;; Build next proof
+      (let [res (apply-rule-1step foreward? rule args)
                   news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
-                  new-res (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res))]
-              (when res (cond
-                          ; a ... -> a b ...
-                          ; TODO immer?
-                          ; mir fällt grad kein plausiebles gegenbeispiel ein...
-                          (= todo (last elems)) 
-                          (let [b  {:body new-res
-                                    :hash (new-number)
-                                    :rule (cons (symbol rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
-                            b) ;TODO Welt ändern
+            new-res (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res))]
+        (when res (cond
+                    ; a ... -> a b ...
+                    ; TODO immer?
+                    ; mir fällt grad kein plausiebles gegenbeispiel ein...
+                    (= todo (last elems)) 
+                    (let [b  {:body new-res
+                              :hash (new-number)
+                              :rule (cons (symbol rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
+                      b)
                 
-                          ; ... a -> ... b a ;
-                          ; TODO immer?
-                          ; ... X -> [(not X) ... (contradiction)] X
-                          (= todo (first elems))
-                          (let [b {:body new-res
+                    ; ... a -> ... b a ;
+                    ; TODO immer?
+                    ; ... X -> [(not X) ... (contradiction)] X
+                    (= todo (first elems))
+                    (let [b {:body new-res
                                     :hash (new-number)
                                     :rule nil}
-                                old-a (last elems)
-                                a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
-                            (list b a))
+                          old-a (last elems)
+                          a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
+                      (list b a))
                 
-                          ; a ... b -> a c b
-                          :else :acb
+                    ; a ... b -> a c b
+                    :else :acb
     ))))))
-
-stop
-
-(set-world! '[a INFER (a ∧ b)])
-
-(load-rule! "resources/rules/natdec.clj")
-
-(show-world)
-
-(apply-rule! "or-i1" true 1 2) ; a ... -> a b ...
-
-(apply-rule! "and-i1-backward" false 2 6) ; ... a -> ... b a

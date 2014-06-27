@@ -7,7 +7,7 @@
   [predicate-formula new-var]
   (let [[pre _ var pred] predicate-formula]
     (when (= pre 'predicate-formula)
-      (if (contains? (set (flatten pred)) new-var)
+      (if (contains? (set (flatten pred)) new-var) ; TODO aufpassen!!! f(x)-Beispiel
         (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" pred"\".")))
         (clojure.walk/prewalk-replace {var new-var} pred)))))
 
@@ -40,7 +40,7 @@
 (defn apply-rule-1step
   "Use an unreformed(!) rule on terms.
    The rule can be used foreward or backward (flag foreward?).
-   Terms is a collektion of all terms.
+   Terms is a collection of all terms.
    Return the result of the therms while using the rule."
   [foreward? rule terms]
   (let [movement (if foreward? (:foreward rule) (:backward rule))]
