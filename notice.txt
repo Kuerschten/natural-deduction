@@ -8,4 +8,5 @@ reform -> rewrite
 worlds: atom -> stack
 globale variablen vermeiden
 worlds.clj -> komplett funktional + neuen Namespace "UI"
+Unifizierung neuer Objekte
 apply_rule.clj -> Zusammensetzen eines Strings -> Zusammensetzen einer Liste

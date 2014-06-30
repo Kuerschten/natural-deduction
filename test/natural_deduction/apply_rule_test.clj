@@ -1,6 +1,6 @@
 (ns natural-deduction.core-test)
 
-(deftest substitution-test
+#_(deftest substitution-test
   (testing "Substitution"
            (is (= '(P(i)) (substitution '(predicate-formula all x (P(x))) 'i)))
            (is (= '(P(i y)) (substitution '(predicate-formula all x (P(x y))) 'i)))
@@ -8,23 +8,23 @@
            (is (= '(and i i) (substitution '(predicate-formula all x (and x x)) 'i)))
            (is (thrown? IllegalArgumentException (substitution '(predicate-formula all x (P(x))) 'x)))))
 
-(deftest reform-test
+#_(deftest reform-test
   (let [rule '{:args [$a $or]
                :forms [[$or ($a ∨ $b)]]
                :foreward $or
                :backward $a}]
     (testing "Reform"
-             (is (= "`((~':args (~$a ~$or)) (~':forms ((~$or (~$a ~'∨ ~$b)))) (~':foreward ~$or) (~':backward ~$a))" (reform rule false))))))
+             (is (= (read-string "`((~':args (~$a ~$or)) (~':forms ((~$or (~$a ~'∨ ~$b)))) (~':foreward ~$or) (~':backward ~$a))") (reform rule false))))))
 
-(deftest apply-rule-reform-test
+#_(deftest apply-rule-reform-test
   (let [rule '{:args [$a $or]
                :forms [[$or ($a ∨ $b)]]
                :foreward $or
                :backward $a}]
     (testing "Apply Rule"
-             (is (= "(fn [$a $or] (clojure.core.logic/fresh [$b] (clojure.core.logic/== $or `(~$a ~'∨ ~$b))))" (apply-rule-reform rule))))))
+             (is (= (read-string "(fn [$a $or] (clojure.core.logic/fresh [$b] (clojure.core.logic/== $or `(~$a ~'∨ ~$b))))") (apply-rule-reform rule))))))
 
-(deftest apply-rule-1step-test
+#_(deftest apply-rule-1step-test
   (let [rule '{:args [$a $or]
                :forms [[$or ($a ∨ $b)]]
                :foreward $or

@@ -5,5 +5,4 @@
 
 (load "scope")
 (load "apply_rule")
-(load "natdec_rules")
 (load "proof")

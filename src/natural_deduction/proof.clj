@@ -14,25 +14,26 @@
    :hash is a number to ident this element
    :rule is the rule that returns this entry (in this case rule is :premise before infer)
 
-   To get a proof you need an infer (\"⊢\" or \"INFER\").
-   An infer gets the body :todo
+   To get a proof you need a proof obligation (\"⊢\" or \"INFER\").
+   An proof obligation gets the body :todo
 
-   E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 2, :rule nil}]"
+   E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 3, :rule nil}]"
   [proof]
+  {:pre [(vector? proof)]}
   (let [flag (atom false)]
     (reset! counter 0)
     (clojure.walk/postwalk
       (fn [x]
         (cond
-          (vector? x) x
-          (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
+   (vector? x) x
+   (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
           :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
-                 :hash (new-number)
-                 :rule (when (not @flag) :premise)}
+          :hash (new-number)
+          :rule (when (not @flag) :premise)}
           ))
       proof)))
 
-(defn build-pretty-string
+(defn- build-pretty-string
   "Get a transformed proof element and return a pretty String of this element.
    A body with :todo becomes a \"...\"
 
@@ -118,7 +119,7 @@
       
       :else ;; Build next proof
       (let [res (apply-rule-1step foreward? rule args)
-                  news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
+            news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
             new-res (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res))]
         (when res (cond
                     ; a ... -> a b ...
@@ -135,12 +136,12 @@
                     ; ... X -> [(not X) ... (contradiction)] X
                     (= todo (first elems))
                     (let [b {:body new-res
-                                    :hash (new-number)
-                                    :rule nil}
+                             :hash (new-number)
+                             :rule nil}
                           old-a (last elems)
                           a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
                       (list b a))
                 
                     ; a ... b -> a c b
-                    :else :acb
+                    :else res
     ))))))
