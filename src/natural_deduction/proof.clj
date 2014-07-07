@@ -120,7 +120,10 @@
       :else ;; Build next proof
       (let [res (apply-rule-1step foreward? rule args)
             news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
-            new-res (list* (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res)))]
+            new-res (list* (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res)))
+            todo-siblings (inner-proof todo proof)
+            todo-siblings-before (subvec todo-siblings 0 (.indexOf todo-siblings todo))
+            todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
         (when res (cond
                     ; a ... -> a b ...
                     ; a ... b -> a b ((interim) solution)
@@ -130,15 +133,13 @@
                     (= todo (last elems)) 
                     (let [b  {:body new-res
                               :hash (new-number)
-                              :rule (cons (symbol (:name rule)) (map #(symbol (str "#" %)) (butlast hashes)))}
-                          flatted-proof (vec (flatten proof))
-                          after-todo (first (subvec flatted-proof (inc (.indexOf flatted-proof todo))))
-                          todo-siblings (inner-proof todo proof)]
-                      (if (= new-res (:body after-todo))
+                              :rule (cons (:name rule) (map #(symbol (str "#" %)) (butlast hashes)))}
+                          flatted-proof (vec (flatten proof))]
+                      (if (= new-res (:body (first todo-siblings-after)))
                         ; a ... b -> a b ((interim) solution)
-                        todo-siblings
+                        (vec (postwalk-replace {todo-siblings (concat todo-siblings-before (list b) (next todo-siblings-after))} proof))
                         ; a ... -> a b ...
-                        :todo
+                        (vec (postwalk-replace {todo-siblings (concat todo-siblings-before (list b todo) todo-siblings-after)} proof))
                         ))
                 
                     ; ... a -> ... b a
