@@ -120,20 +120,30 @@
       :else ;; Build next proof
       (let [res (apply-rule-1step foreward? rule args)
             news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
-            new-res (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res))]
+            new-res (list* (when res (prewalk-replace (zipmap news (map (fn [_] (gensym "P")) news)) res)))]
         (when res (cond
                     ; a ... -> a b ...
-                    ; TODO immer?
+                    ; a ... b -> a b ((interim) solution)
+                    ; immer?
+                    ; nur einlementeige Einfügungen?
                     ; mir fällt grad kein plausiebles gegenbeispiel ein...
                     (= todo (last elems)) 
                     (let [b  {:body new-res
                               :hash (new-number)
-                              :rule (cons (symbol rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
-                      b)
+                              :rule (cons (symbol (:name rule)) (map #(symbol (str "#" %)) (butlast hashes)))}
+                          flatted-proof (vec (flatten proof))
+                          after-todo (first (subvec flatted-proof (inc (.indexOf flatted-proof todo))))
+                          todo-siblings (inner-proof todo proof)]
+                      (if (= new-res (:body after-todo))
+                        ; a ... b -> a b ((interim) solution)
+                        todo-siblings
+                        ; a ... -> a b ...
+                        :todo
+                        ))
                 
-                    ; ... a -> ... b a ;
-                    ; TODO immer?
-                    ; ... X -> [(not X) ... (contradiction)] X
+                    ; ... a -> ... b a
+                    ; ... a -> b a
+                    ; ACHTUNG: Ergebnis mit mehr als einem element
                     (= todo (first elems))
                     (let [b {:body new-res
                              :hash (new-number)

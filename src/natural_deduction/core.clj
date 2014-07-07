@@ -6,3 +6,7 @@
 (load "scope")
 (load "apply_rule")
 (load "proof")
+
+stop
+
+(pretty-printer (proof-step (first (load-rules "resources/rules/natdec.clj")) (build-proof '[a b INFER (b ∧ a)]) true 1 2 3))
