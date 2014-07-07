@@ -127,24 +127,23 @@
         (when res (cond
                     ; a ... -> a b ...
                     ; a ... b -> a b ((interim) solution)
-                    ; immer?
-                    ; nur einlementeige Einfügungen?
-                    ; mir fällt grad kein plausiebles gegenbeispiel ein...
+                    ; every time?
+                    ; b has only one element?
+                    ; i do not know any counterexample now...
                     (= todo (last elems)) 
                     (let [b  {:body new-res
-                              :hash (new-number)
-                              :rule (cons (:name rule) (map #(symbol (str "#" %)) (butlast hashes)))}
-                          flatted-proof (vec (flatten proof))]
+                              :hash nil
+                              :rule (cons (:name rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
                       (if (= new-res (:body (first todo-siblings-after)))
                         ; a ... b -> a b ((interim) solution)
-                        (vec (postwalk-replace {todo-siblings (concat todo-siblings-before (list b) (next todo-siblings-after))} proof))
+                        (postwalk-replace {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))} proof)
                         ; a ... -> a b ...
-                        (vec (postwalk-replace {todo-siblings (concat todo-siblings-before (list b todo) todo-siblings-after)} proof))
+                        (postwalk-replace {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))} proof)
                         ))
                 
                     ; ... a -> ... b a
                     ; ... a -> b a
-                    ; ACHTUNG: Ergebnis mit mehr als einem element
+                    ; attention: sub-proof
                     (= todo (first elems))
                     (let [b {:body new-res
                              :hash (new-number)
@@ -154,5 +153,7 @@
                       (list b a))
                 
                     ; a ... b -> a c b
+                    ; attention: * c with more then one element
+                    ;            * sub-proof
                     :else res
     ))))))
