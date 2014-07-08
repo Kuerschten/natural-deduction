@@ -6,6 +6,23 @@
   []
   (swap! counter inc))
 
+(defn- build-subproof
+  ([proof]
+  (build-subproof proof :assumption))
+  
+  ([proof rule]
+  (let [flag (atom false)]
+    (clojure.walk/postwalk
+      (fn [x]
+        (cond
+   (vector? x) x
+   (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
+          :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
+          :hash (new-number)
+          :rule (when (not @flag) rule)}
+          ))
+      proof))))
+
 (defn build-proof
   "Get a nested vector as proof and transform it.
 
@@ -20,18 +37,9 @@
    E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 3, :rule nil}]"
   [proof]
   {:pre [(vector? proof)]}
-  (let [flag (atom false)]
+  (do
     (reset! counter 0)
-    (clojure.walk/postwalk
-      (fn [x]
-        (cond
-   (vector? x) x
-   (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
-          :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
-          :hash (new-number)
-          :rule (when (not @flag) :premise)}
-          ))
-      proof)))
+    (build-subproof proof :premise)))
 
 (defn- build-pretty-string
   "Get a transformed proof element and return a pretty String of this element.
@@ -133,24 +141,39 @@
                     (= todo (last elems)) 
                     (let [b  {:body new-res
                               :hash nil
-                              :rule (cons (:name rule) (map #(symbol (str "#" %)) (butlast hashes)))}]
+                              :rule (cons (:name rule) (butlast hashes))}]
                       (if (= new-res (:body (first todo-siblings-after)))
                         ; a ... b -> a b ((interim) solution)
-                        (postwalk-replace {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))} proof)
+                        (postwalk-replace
+                          {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))}
+                          proof)
                         ; a ... -> a b ...
-                        (postwalk-replace {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))} proof)
+                        (postwalk-replace
+                          {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))}
+                          proof)
                         ))
                 
                     ; ... a -> ... b a
-                    ; ... a -> b a
-                    ; attention: sub-proof
+                    ; ... a -> b a (sub-proof or (interim) solution)
                     (= todo (first elems))
-                    (let [b {:body new-res
-                             :hash (new-number)
-                             :rule nil}
-                          old-a (last elems)
-                          a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
-                      (list b a))
+                    #_(let [b {:body new-res
+                              :hash (new-number)
+                              :rule nil}
+                           old-a (last elems)
+                           a (assoc old-a :rule (list (symbol rule)  (symbol (str "#" (:hash b)))))]
+                       (list b a))
+                    (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
+                      ; ...a -> b a (sub-proof)
+                      (let [b (build-subproof (vec new-res))
+                            a (assoc (first todo-siblings-after) :rule (cons (:name rule) (list (list 'between (:hash (first b)) (:hash (last b))))))]
+                        (postwalk-replace
+                          {todo b,
+                           (first todo-siblings-after) a}
+                          proof))
+                      
+                      ; single element
+                      :single-element
+                      )
                 
                     ; a ... b -> a c b
                     ; attention: * c with more then one element

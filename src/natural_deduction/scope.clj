@@ -37,4 +37,3 @@
     (if (contains? (set proof) elem)
       proof
       (first (filter (complement nil?) (map (partial inner-proof elem) proof))))))
-      
