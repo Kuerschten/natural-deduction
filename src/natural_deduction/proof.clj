@@ -176,9 +176,13 @@
                               proof))
                           
                           ; new insertion
-                          :new-insertion
-                          ))
-                      )
+                          (let [b {:body new-res
+                                   :hash (new-number)
+                                   :rule nil}
+                                a (assoc old-a :rule (cons (:name rule) (list (:hash b))))]
+                            (postwalk-replace
+                              {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before (list todo b) todo-siblings-after)))}
+                              proof)))))
                 
                     ; a ... b -> a c b
                     ; attention: * c with more then one element -> new keyword in rule?
