@@ -26,3 +26,15 @@ stop
                   (build-proof '[INFER (a → b)])
                   false
                   1 5))
+
+(pretty-printer (proof-step
+                  (first(clojure.set/select #(= (:name %) "and-i1-backward") (load-rules "resources/rules/natdec.clj")))
+                  (build-proof '[a INFER (a ∧ b)])
+                  false
+                  2 6))
+
+(pretty-printer (proof-step
+                  (first(clojure.set/select #(= (:name %) "and-i1-backward") (load-rules "resources/rules/natdec.clj")))
+                  (build-proof '[b INFER (a ∧ b)])
+                  false
+                  2 6))
