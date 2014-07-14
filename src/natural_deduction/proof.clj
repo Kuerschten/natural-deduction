@@ -103,7 +103,7 @@
            "\t\tresult: " (:backward r)))))
 
 (defn proof-step
-  [rule proof foreward? & hashes]
+  [proof rule foreward? & hashes]
   (let [elems (flatten (filter
                          (fn [x] (some
                                    (fn [y] (= (:hash x) y))
@@ -193,7 +193,23 @@
                       (case proofs
                         ; insertion
                         0
-                        :insertion
+                        (if foreward?
+                          ; foreward insertion
+                          (if (= new-res (:body (first todo-siblings-after)))
+                            ; (interim) solution
+                            :foreward-solution
+                            
+                            ; new insertion
+                            :foreward-new-insertion
+                          
+                          ; backward insertion
+                          (if (= new-res (:body (last todo-siblings-before)))
+                            ; (interim) solution
+                            :backward-solution
+                            
+                            ; new insertion
+                            :backward-new-insertion
+                        )
                         
                         ; one proof
                         1
