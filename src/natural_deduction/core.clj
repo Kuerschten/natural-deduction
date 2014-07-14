@@ -42,9 +42,14 @@ stop
                   2 6))
 
 ; between
-
 (pretty-printer (proof-step
                   (first (clojure.set/select #(= (:name %) "or-e") (load-rules "resources/rules/natdec.clj")))
                   (build-proof '[(a ∨ b) INFER X])
                   true
                   4 5 6))
+
+(pretty-printer (proof-step
+                  (first (clojure.set/select #(= (:name %) "exists-e") (load-rules "resources/rules/natdec.clj")))
+                  (build-proof '[(predicate-formula ∃ x (P(x))) INFER X])
+                  true
+                  8 9 10))

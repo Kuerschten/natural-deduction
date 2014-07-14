@@ -16,7 +16,7 @@
       (fn [x]
         (cond
    (vector? x) x
-   (list? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
+   (seq? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
           :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
           :hash (new-number)
           :rule (when (not @flag) rule)}
@@ -45,7 +45,7 @@
   "Get a transformed proof element and return a pretty String of this element.
    A body with :todo becomes a \"...\"
 
-   E.g.  {:body a, :hash 1, :rule :premise} => \"a (#1 premise)\""
+   E.g.  {:body a, :hash 1, :rule :premise} => \"a (#1 :premise)\""
   [elem]
   (let [r (:rule elem)]
     (str (if (= (:body elem) :todo)
@@ -155,7 +155,7 @@
                 
                     ; ... a -> b a (sub-proof)
                     ; ... a -> ... b a
-                    ; b ... a -> ba ((interim) solution)
+                    ; b ... a -> b a ((interim) solution)
                     (= todo (first elems))
                     (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
                       ; ...a -> b a (sub-proof)
@@ -191,18 +191,23 @@
                     (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
                           old-b (last elems)]
                       (case proofs
-                        0
                         ; insertion
+                        0
                         :insertion
                         
-                        1
                         ; one proof
-                        :proof
+                        1
+                        (let [sub-proof (build-subproof (vec new-res))
+                              b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (list (list 'between (:hash (first sub-proof)) (:hash (last sub-proof)))))))]
+                          (postwalk-replace
+                            {todo-siblings (vec (concat todo-siblings-before (list sub-proof) (postwalk-replace {old-b b} todo-siblings-after)))}
+                            proof))
                         
                         ; multiple proofs
                         (let [sub-proofs (map #(build-subproof (vec %)) new-res)
-                              b (assoc old-b :rule (cons (:name rule) (map (fn [e] (list 'between (:hash (first e)) (:hash (last e)))) sub-proofs)))]
+                              b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (map (fn [e] (list 'between (:hash (first e)) (:hash (last e)))) sub-proofs))))]
 	                        (postwalk-replace
 	                          {todo-siblings (vec (concat todo-siblings-before sub-proofs (postwalk-replace {old-b b} todo-siblings-after)))}
 	                          proof)
-                        )))))))))
+                        )))
+    ))))))
