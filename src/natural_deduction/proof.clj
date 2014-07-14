@@ -187,5 +187,22 @@
                     ; a ... b -> a c b
                     ; attention: * c with more then one element -> new keyword in rule?
                     ;            * sub-proof
-                    :else res
-    ))))))
+                    :else
+                    (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
+                          old-b (last elems)]
+                      (case proofs
+                        0
+                        ; insertion
+                        :insertion
+                        
+                        1
+                        ; one proof
+                        :proof
+                        
+                        ; multiple proofs
+                        (let [sub-proofs (map #(build-subproof (vec %)) new-res)
+                              b (assoc old-b :rule (cons (:name rule) (map (fn [e] (list 'between (:hash (first e)) (:hash (last e)))) sub-proofs)))]
+	                        (postwalk-replace
+	                          {todo-siblings (vec (concat todo-siblings-before sub-proofs (postwalk-replace {old-b b} todo-siblings-after)))}
+	                          proof)
+                        )))))))))
