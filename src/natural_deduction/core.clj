@@ -59,3 +59,13 @@ stop
                   (first (clojure.set/select #(= (:name %) "exists-i") (load-rules "resources/rules/natdec.clj")))
                   false
                   3 4 12))
+
+; proofs
+(def rules (load-rules "resources/rules/natdec.clj"))
+
+(pretty-printer
+  (-> (build-proof '[P INFER (¬ (¬ P))])
+    (proof-step (get-rule rules "not-i") false  2 7)
+    (proof-step (get-rule rules "and-i1") true 1 10 11)
+    (proof-step (get-rule rules "not-e") true 13 11)
+    ))
