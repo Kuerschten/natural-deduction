@@ -63,19 +63,20 @@
     (pretty-printer proof 0))
   
   ([proof lvl]
-    (doseq [elem proof]
-      (if (vector? elem)
-        (do
-          (dotimes [_ lvl] (print "| "))
-          (dotimes [_ (- 40 lvl)] (print "--"))
-          (println)
-          (pretty-printer elem (inc lvl))
-          (dotimes [_ lvl] (print "| "))
-          (dotimes [_ (- 40 lvl)] (print "--"))
-          (println))
-        (do
-          (dotimes [_ lvl] (print "| "))
-          (println (build-pretty-string elem)))))))
+    (let [p (postwalk #(if (and (seq? %) (not (list? %))) (apply list %) %) proof)]
+      (doseq [elem p]
+        (if (vector? elem)
+          (do
+	          (dotimes [_ lvl] (print "| "))
+	          (dotimes [_ (- 40 lvl)] (print "--"))
+	          (println)
+	          (pretty-printer elem (inc lvl))
+	          (dotimes [_ lvl] (print "| "))
+	          (dotimes [_ (- 40 lvl)] (print "--"))
+	          (println))
+	        (do
+	          (dotimes [_ lvl] (print "| "))
+	          (println (build-pretty-string elem))))))))
 
 (defn load-rules
   "Load a file and returns a hashmap with all rules."
