@@ -69,3 +69,10 @@ stop
     (proof-step (get-rule rules "and-i1") true 1 10 11)
     (proof-step (get-rule rules "not-e") true 13 11)
     ))
+
+(pretty-printer
+  (-> (build-proof '[a INFER (a ∨ b)])
+    (proof-step (get-rule rules "or-i1") true 1 2)
+    (unify 8 'new7 'b)
+    (proof-step (get-rule rules "same") true 8 2)
+    ))

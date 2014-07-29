@@ -1,3 +1,10 @@
+; SAME
+{:name "same"
+ :args [$a $b]
+ :forms [[$a $b]]
+ :foreward $b
+ :backward $a}
+
 ; AND
 {:name "and-e1"
  :args [$and $a]

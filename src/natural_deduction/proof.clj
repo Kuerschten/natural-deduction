@@ -107,6 +107,11 @@
            "\t\targuments: " (apply str (interpose ", " (:args r)))
            "\t\tresult: " (:backward r)))))
 
+(defn unify
+  [proof hash old new]
+  (let [old-step (first (filter #(= hash (:hash %)) (flatten proof)))]
+    (postwalk-replace {old-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))} proof)))
+
 (defn proof-step
   [proof rule foreward? & hashes]
   (let [elems (flatten (filter
@@ -131,57 +136,57 @@
       (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit."))
       
       :else ;; Build next proof
-      (let [res (apply-rule-1step foreward? rule args)
+     (let [res (apply-rule-1step foreward? rule args)
             news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
-            new-res (if (coll? res) (list* (when res (prewalk-replace (zipmap news (map (fn [_] (with-meta (gensym "new") {:unifiable? true})) news)) res))) res)
+           new-res (if (coll? res) (list* (when res (prewalk-replace (zipmap news (map (fn [_] (with-meta (symbol (str "new" (new-number))) {:unifiable? true})) news)) res))) res)
             todo-siblings (inner-proof todo proof)
             todo-siblings-before (subvec todo-siblings 0 (.indexOf todo-siblings todo))
             todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
         (when res (cond
-                    ; a ... -> a b ...
-                    ; a ... b -> a b ((interim) solution)
-                    ; every time?
-                    ; b has only one element?
-                    ; i do not know any counterexample now...
-                    (= todo (last elems))
-                    (let [b  {:body new-res
+                   ; a ... -> a b ...
+                   ; a ... b -> a b ((interim) solution)
+                   ; every time?
+                   ; b has only one element?
+                   ; i do not know any counterexample now...
+                   (= todo (last elems))
+                   (let [b  {:body new-res
                               :hash nil
                               :rule (cons (:name rule) (butlast hashes))}]
                       (if (= new-res (:body (first todo-siblings-after)))
                         ; a ... b -> a b ((interim) solution)
-                       (postwalk-replace
+                      (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))}
                           proof)
                         ; a ... -> a b ...
-                       (postwalk-replace
+                      (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))}
                           proof)
                         ))
                     
-                    ; ... a -> b a (sub-proof)
-                    ; ... a -> ... b a
-                    ; b ... a -> b a ((interim) solution)
-                    (= todo (first elems))
+                   ; ... a -> b a (sub-proof)
+                   ; ... a -> ... b a
+                   ; b ... a -> b a ((interim) solution)
+                   (= todo (first elems))
                     (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
                       ; ...a -> b a (sub-proof)
-                     (let [b (build-subproof (vec new-res))
+                    (let [b (build-subproof (vec new-res))
                             a (assoc (first todo-siblings-after) :rule (cons (:name rule) (list (list 'between (:hash (first b)) (:hash (last b))))))]
                         (postwalk-replace
                           {todo b,
                            (first todo-siblings-after) a}
                           proof))
                      
-                     ; single element
-                     (let [old-a (last elems)]
+                    ; single element
+                    (let [old-a (last elems)]
                         (if (= new-res (:body (last todo-siblings-before)))
                           ; (interim) solution
-                         (let [a (assoc old-a :rule (cons (:name rule) (list (:hash (last todo-siblings-before)))))]
+                        (let [a (assoc old-a :rule (cons (:name rule) (list (:hash (last todo-siblings-before)))))]
                             (postwalk-replace
                               {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before todo-siblings-after)))}
                               proof))
                          
-                         ; new insertion
-                         (let [b {:body new-res
+                        ; new insertion
+                        (let [b {:body new-res
                                    :hash (new-number)
                                    :rule nil}
                                 a (assoc old-a :rule (cons (:name rule) (list (:hash b))))]
@@ -189,47 +194,47 @@
                               {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before (list todo b) todo-siblings-after)))}
                               proof)))))
                     
-                    ; a ... b -> a c b
-                    ; attention: * c with more then one element -> new keyword in rule?
-                    ;            * sub-proof
-                    :else
-                    (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
-                          old-b (last elems)]
-                      (case proofs
-                        ; insertion
-                        0
-                        (if foreward?
-                          ; foreward insertion
-                          (if (= new-res (:body (first todo-siblings-after)))
-                            ; (interim) solution
-                            :foreward-solution
+                   ; a ... b -> a c b
+                   ; attention: * c with more then one element -> new keyword in rule?
+                   ;            * sub-proof
+                   :else
+                   (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
+                         old-b (last elems)]
+                     (case proofs
+                       ; insertion
+                       0
+                       (if foreward?
+                         ; foreward insertion
+                         (if (= new-res (:body (first todo-siblings-after)))
+                           ; (interim) solution
+                           :foreward-solution
                             
                             ; new insertion
-                            :foreward-new-insertion
-                            )
+                           :foreward-new-insertion
+                           )
                           
-                          ; backward insertion
-                          (if (= new-res (:body (last todo-siblings-before)))
-                            ; (interim) solution
-                            :backward-solution
+                         ; backward insertion
+                         (if (= new-res (:body (last todo-siblings-before)))
+                           ; (interim) solution
+                           :backward-solution
                             
-                            ; new insertion
-                            :backward-new-insertion
-                        ))
+                           ; new insertion
+                           :backward-new-insertion
+                       ))
                         
-                        ; one proof
-                        1
-                        (let [sub-proof (build-subproof (vec new-res))
-                              b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (list (list 'between (:hash (first sub-proof)) (:hash (last sub-proof)))))))]
-                          (postwalk-replace
-                            {todo-siblings (vec (concat todo-siblings-before (list sub-proof) (postwalk-replace {old-b b} todo-siblings-after)))}
-                            proof))
+                       ; one proof
+                       1
+                       (let [sub-proof (build-subproof (vec new-res))
+                             b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (list (list 'between (:hash (first sub-proof)) (:hash (last sub-proof)))))))]
+                         (postwalk-replace
+                           {todo-siblings (vec (concat todo-siblings-before (list sub-proof) (postwalk-replace {old-b b} todo-siblings-after)))}
+                           proof))
                         
-                        ; multiple proofs
-                        (let [sub-proofs (map #(build-subproof (vec %)) new-res)
-                              b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (map (fn [e] (list 'between (:hash (first e)) (:hash (last e)))) sub-proofs))))]
-	                        (postwalk-replace
-	                          {todo-siblings (vec (concat todo-siblings-before sub-proofs (postwalk-replace {old-b b} todo-siblings-after)))}
-	                          proof)
-                        )))
+                       ; multiple proofs
+                       (let [sub-proofs (map #(build-subproof (vec %)) new-res)
+                             b (assoc old-b :rule (list* (concat (list (:name rule)) (subvec (vec hashes) 0 todo-index) (map (fn [e] (list 'between (:hash (first e)) (:hash (last e)))) sub-proofs))))]
+	                       (postwalk-replace
+	                         {todo-siblings (vec (concat todo-siblings-before sub-proofs (postwalk-replace {old-b b} todo-siblings-after)))}
+	                         proof)
+                       )))
     ))))))
