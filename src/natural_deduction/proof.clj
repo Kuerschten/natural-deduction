@@ -112,8 +112,8 @@
   (let [old-step (first (filter #(= hash (:hash %)) (flatten proof)))]
     (postwalk-replace {old-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))} proof)))
 
-(defn proof-step
-  [proof rule foreward? & hashes]
+(defn- proof-step
+  [proof rule foreward? hashes]
   (let [elems (flatten (filter
                          (fn [x] (some
                                    (fn [y] (= (:hash x) y))
@@ -238,3 +238,11 @@
 	                         proof)
                        )))
     ))))))
+
+(defn proof-step-foreward
+  [proof rule & hashes]
+  (proof-step proof rule true hashes))
+
+(defn proof-step-backward
+  [proof rule & hashes]
+  (proof-step proof rule false hashes))

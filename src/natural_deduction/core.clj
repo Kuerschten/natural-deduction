@@ -65,14 +65,21 @@ stop
 
 (pretty-printer
   (-> (build-proof '[P INFER (¬ (¬ P))])
-    (proof-step (get-rule rules "not-i") false  2 7)
-    (proof-step (get-rule rules "and-i1") true 1 10 11)
-    (proof-step (get-rule rules "not-e") true 13 11)
+    (proof-step-backward (get-rule rules "not-i")  2 7)
+    (proof-step-foreward (get-rule rules "and-i1")  1 10 11)
+    (proof-step-foreward (get-rule rules "not-e")  13 11)
+    ))
+
+(pretty-printer
+  (-> (build-proof '[(¬ (¬ P)) INFER P])
+    (proof-step-backward (get-rule rules "raa")  6 7)
+    (proof-step-foreward (get-rule rules "and-i2") 5 10 11)
+    (proof-step-foreward (get-rule rules "not-e") 13 11)
     ))
 
 (pretty-printer
   (-> (build-proof '[a INFER (a ∨ b)])
-    (proof-step (get-rule rules "or-i1") true 1 2)
+    (proof-step-foreward (get-rule rules "or-i1") 1 2)
     (unify 8 'new7 'b)
-    (proof-step (get-rule rules "same") true 8 2)
+    (proof-step-foreward (get-rule rules "same") 8 2)
     ))
