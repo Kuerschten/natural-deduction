@@ -10,3 +10,11 @@ globale variablen vermeiden
 worlds.clj -> komplett funktional + neuen Namespace "UI"
 Unifizierung neuer Objekte
 --apply_rule.clj -> Zusammensetzen eines Strings -> Zusammensetzen einer Liste
+
+=====
+
+unify: (sub)proof abschluss
+not-e überarbeiten
+impl-e überarbeiten
+
+(tex-Output: beweise) -> Bachelorarbeit

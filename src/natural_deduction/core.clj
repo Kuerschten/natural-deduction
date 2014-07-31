@@ -78,6 +78,21 @@ stop
     ))
 
 (pretty-printer
+  (-> (build-proof '[(P → Q) (¬ Q) INFER (¬ P)])
+    (proof-step-backward (get-rule rules "not-i") 8 11)
+    (proof-step-foreward (get-rule rules "same") 4 13)
+    (proof-step-foreward (get-rule rules "impl-e") 12 15 13)
+    (proof-step-foreward (get-rule rules "and-i2") 7 16 13)
+    (proof-step-foreward (get-rule rules "not-e") 17 13)
+    ))
+
+(pretty-printer
+  (-> (build-proof '[INFER (P ∨ (¬ P))])
+    (proof-step-backward (get-rule rules "raa") 1 7)
+    ; ???
+    ))
+
+(pretty-printer
   (-> (build-proof '[a INFER (a ∨ b)])
     (proof-step-foreward (get-rule rules "or-i1") 1 2)
     (unify 8 'new7 'b)
