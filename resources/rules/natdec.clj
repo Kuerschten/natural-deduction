@@ -56,8 +56,13 @@
  :backward $b}
 
 ; IMPL
-{:name "impl-e"
+{:name "impl-e1"
  :args [$a $impl $b]
+ :forms [[$impl ($a → $b)]]
+ :foreward $b}
+
+{:name "impl-e2"
+ :args [$impl $a $b]
  :forms [[$impl ($a → $b)]]
  :foreward $b}
 
@@ -68,9 +73,16 @@
  :backward $proof}
 
 ; NOT
-{:name "not-e"
- :args [$and $contradiction]
- :forms [[$and ($a ∧ (¬ $a))]
+{:name "not-e1"
+ :args [$a $not $contradiction]
+ :forms [[$not (¬ $a)]
+         [$contradiction ⊥]]
+ :foreward $contradiction
+ :backward $and}
+
+{:name "not-e2"
+ :args [$not $a $contradiction]
+ :forms [[$not (¬ $a)]
          [$contradiction ⊥]]
  :foreward $contradiction
  :backward $and}

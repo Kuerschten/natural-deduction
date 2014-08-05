@@ -14,7 +14,5 @@ Unifizierung neuer Objekte
 =====
 
 unify: (sub)proof abschluss
-not-e überarbeiten
-impl-e überarbeiten
 
 (tex-Output: beweise) -> Bachelorarbeit

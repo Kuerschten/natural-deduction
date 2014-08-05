@@ -11,17 +11,24 @@
   (build-subproof proof :assumption))
   
   ([proof rule]
-  (let [flag (atom false)]
-    (clojure.walk/postwalk
-      (fn [x]
-        (cond
-   (vector? x) x
-   (seq? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
-          :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
-          :hash (new-number)
-          :rule (when (not @flag) rule)}
-          ))
-      proof))))
+  (let [nr (inc @counter)
+        flag (atom false)
+        pre  (clojure.walk/postwalk
+               (fn [x]
+                 (cond
+                   (vector? x) x
+                   (seq? x) {:body (apply list (map :body x)) :hash (new-number) :rule (:rule (first x))}
+                   :else {:body (if (or (= x '⊢) (= x 'INFER)) (do (reset! flag true) :todo) x)
+                          :hash (new-number)
+                          :rule (when (not @flag) rule)}))
+               proof)
+        p (postwalk-replace (apply hash-map (flatten (map
+                                                       #(list %1 (assoc %1 :hash (+ %2 nr)))
+                                                       (flatten pre) (range))))
+                            pre)]
+    (reset! counter (:hash (last (flatten p))))
+    p)))
+    
 
 (defn build-proof
   "Get a nested vector as proof and transform it.
@@ -40,6 +47,10 @@
   (do
     (reset! counter 0)
     (build-subproof proof :premise)))
+
+(defn- get-line
+  [proof elem]
+  (inc (.indexOf (flatten proof) elem)))
 
 (defn- build-pretty-string
   "Get a transformed proof element and return a pretty String of this element.
