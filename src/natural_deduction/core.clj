@@ -86,5 +86,4 @@ stop
   (-> (build-proof '[a INFER (a ∨ b)])
     (proof-step-foreward (get-rule rules "or-i1") 1 2)
     (unify 5 'new4 'b)
-    (proof-step-foreward (get-rule rules "same") 5 2)
     ))
