@@ -182,18 +182,18 @@
                      (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))}
                           proof)
+                     
                         ; a ... -> a b ...
                      (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))}
-                          proof)
-                        ))
+                          proof)))
                     
                   ; ... a -> b a (sub-proof)
                   ; ... a -> ... b a
                   ; b ... a -> b a ((interim) solution)
                   (= todo (first elems))
-                  (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
-                    ; ...a -> b a (sub-proof)
+                  (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set new-res) 'INFER)))
+                    ; ... a -> b a (sub-proof)
                     (let [b (build-subproof (vec new-res))
                           a (assoc (first todo-siblings-after) :rule (cons (:name rule) (list (list 'between (:hash (first b)) (:hash (last b))))))]
                       (postwalk-replace
@@ -205,13 +205,13 @@
                    (let [old-a (last elems)]
                         (if (= new-res (:body (last todo-siblings-before)))
                           ; (interim) solution
-                       (let [a (assoc old-a :rule (cons (:name rule) (list (:hash (last todo-siblings-before)))))]
+                          (let [a (assoc old-a :rule (cons (:name rule) (list (:hash (last todo-siblings-before)))))]
                             (postwalk-replace
                               {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before todo-siblings-after)))}
                               proof))
-                         
-                       ; new insertion
-                       (let [b {:body new-res
+                          
+                          ; new insertion
+                          (let [b {:body new-res
                                    :hash (new-number)
                                    :rule nil}
                                 a (assoc old-a :rule (cons (:name rule) (list (:hash b))))]
@@ -222,13 +222,15 @@
                   ; a ... b -> a c b
                   ; * one sub-proof
                   ; * multiple sub-proofs
-                  ; * singel element foreward/backward (sub) solution
                   ;
                   ; a ... b -> a ... c b
                   ; * single element backward
                   ;
-                  ; a ... b-> a c ... b
+                  ; a ... b -> a c ... b
                   ; * single element foreward
+                  ;
+                  ; a ... b -> a b
+                  ; * single element foreward/backward (interim) solution
                   :else
                   (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
                         old-b (last elems)]
@@ -254,14 +256,10 @@
                           (let [c {:body new-res
                                    :hash (new-number)
                                    :rule nil}
-                                old-b (last todo-siblings)
                                 new-b (assoc old-b :rule (concat (list (:name rule)) (conj (vec (butlast (butlast hashes))) (:hash c))))]
                             (postwalk-replace
                               {todo-siblings (vec (concat todo-siblings-before (list todo c) (postwalk-replace {old-b new-b} todo-siblings-after)))}
-                              proof)
-                            )
-;                          (throw (UnsupportedOperationException. "backward new insertion (inside insertion) must get implemented"))
-                      ))
+                              proof))))
                         
                       ; one proof
                       1
