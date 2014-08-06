@@ -78,14 +78,14 @@
  :forms [[$not (¬ $a)]
          [$contradiction ⊥]]
  :foreward $contradiction
- :backward $and}
+ :backward $not}
 
 {:name "not-e2"
  :args [$not $a $contradiction]
  :forms [[$not (¬ $a)]
          [$contradiction ⊥]]
  :foreward $contradiction
- :backward $and}
+ :backward $a}
 
 {:name "not-i"
  :args [$proof $res]

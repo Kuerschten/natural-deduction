@@ -2,6 +2,9 @@
 rule args -> antecedent-steps (or-e #2)
 (var i) -> (object/actual/element i)
 
+(tex-Output: beweise) -> Bachelorarbeit
+
 =====
 
-(tex-Output: beweise) -> Bachelorarbeit
+proof-step fertig machen
+Beispielbeweise

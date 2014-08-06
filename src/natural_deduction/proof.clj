@@ -192,14 +192,14 @@
                   ; ... a -> ... b a
                   ; b ... a -> b a ((interim) solution)
                   (= todo (first elems))
-                    (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
-                      ; ...a -> b a (sub-proof)
-                   (let [b (build-subproof (vec new-res))
-                            a (assoc (first todo-siblings-after) :rule (cons (:name rule) (list (list 'between (:hash (first b)) (:hash (last b))))))]
-                        (postwalk-replace
-                          {todo b,
-                           (first todo-siblings-after) a}
-                          proof))
+                  (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set (new-res)) 'INFER)))
+                    ; ...a -> b a (sub-proof)
+                    (let [b (build-subproof (vec new-res))
+                          a (assoc (first todo-siblings-after) :rule (cons (:name rule) (list (list 'between (:hash (first b)) (:hash (last b))))))]
+                      (postwalk-replace
+                        {todo b,
+                         (first todo-siblings-after) a}
+                        proof))
                      
                    ; single element
                    (let [old-a (last elems)]
@@ -220,8 +220,15 @@
                               proof)))))
                     
                   ; a ... b -> a c b
-                  ; attention: * c with more then one element -> new keyword in rule?
-                  ;            * sub-proof
+                  ; * one sub-proof
+                  ; * multiple sub-proofs
+                  ; * singel element foreward/backward (sub) solution
+                  ;
+                  ; a ... b -> a ... c b
+                  ; * single element backward
+                  ;
+                  ; a ... b-> a c ... b
+                  ; * single element foreward
                   :else
                   (let [proofs (count (filter #(or (= '⊢ %) (= 'INFER %)) (flatten new-res)))
                         old-b (last elems)]
@@ -232,19 +239,28 @@
                         ; foreward insertion
                         (if (= new-res (:body (first todo-siblings-after)))
                           ; (interim) solution
-                          :foreward-solution
-                            
-                            ; new insertion
-                          :foreward-new-insertion
+                          (throw (UnsupportedOperationException. "foreward solution (inside insertion) must get implemented"))
+                          
+                          ; new insertion
+                          (throw (UnsupportedOperationException. "foreward new insertion (inside insertion) must get implemented"))
                           )
                           
                         ; backward insertion
                         (if (= new-res (:body (last todo-siblings-before)))
                           ; (interim) solution
-                          :backward-solution
+                          (throw (UnsupportedOperationException. "backward solution (inside insertion) must get implemented"))
                             
                           ; new insertion
-                          :backward-new-insertion
+                          (let [c {:body new-res
+                                   :hash (new-number)
+                                   :rule nil}
+                                old-b (last todo-siblings)
+                                new-b (assoc old-b :rule (concat (list (:name rule)) (conj (vec (butlast (butlast hashes))) (:hash c))))]
+                            (postwalk-replace
+                              {todo-siblings (vec (concat todo-siblings-before (list todo c) (postwalk-replace {old-b new-b} todo-siblings-after)))}
+                              proof)
+                            )
+;                          (throw (UnsupportedOperationException. "backward new insertion (inside insertion) must get implemented"))
                       ))
                         
                       ; one proof

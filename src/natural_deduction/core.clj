@@ -38,7 +38,7 @@ stop
                   (get-rule rules "and-i1-backward")
                   2 3))
 
-; between
+; inside
 (pretty-printer (proof-step-foreward
                   (build-proof '[(a ∨ b) INFER X])
                   (get-rule rules "or-e")
@@ -52,7 +52,7 @@ stop
 (pretty-printer (proof-step-backward
                   (build-proof '[(var i) INFER (predicate-formula ∃ x (P(x)))])
                   (get-rule rules "exists-i")
-                  1 2 3)) ; TODO :backward-new-insertion
+                  1 2 3)) ; TODO
 
 ; proofs
 (def rules (load-rules "resources/rules/natdec.clj"))
@@ -79,6 +79,7 @@ stop
 (pretty-printer
   (-> (build-proof '[INFER (P ∨ (¬ P))])
     (proof-step-backward (get-rule rules "raa") 1 2)
+    (proof-step-backward (get-rule rules "not-e2") 3 4 5)
     ; ???
     ))
 
