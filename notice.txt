@@ -6,9 +6,10 @@ rule args -> antecedent-steps (or-e #2)
 
 =====
 
-proof-step fertig machen
 bewiesene Theoreme wiederverwenden
 Beispielbeweise
+
+(apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
 
 =====
 

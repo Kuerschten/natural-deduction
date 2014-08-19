@@ -108,28 +108,28 @@
 ; ALL
 {:name "all-i"
  :args [$proof $all]
- :forms [[$proof ((var $i) ⊢ (substitution $all $i))]
-         [$all (predicate-formula ∀ $x $predicate-formula)]]
+ :forms [[$proof ((actual $i) ⊢ (substitution $all $i))]
+         [$all (∀ $x $predicate-formula)]]
  :backward $proof}
 
 {:name "all-e"
- :args [$all $var $substitute]
- :forms [[$all (predicate-formula ∀ $x $predicate-formula)]
-         [$var (var $t)]
+ :args [$all $actual $substitute]
+ :forms [[$all (∀ $x $predicate-formula)]
+         [$actual (actual $t)]
          [$substitute (substitution $all $t)]]
  :foreward $substitute}
 
 ; EXISTS
 {:name "exists-i"
- :args [$var $substitute $exists]
- :forms [[$var (var $t)]
+ :args [$actual $substitute $exists]
+ :forms [[$actual (actual $t)]
          [$substitute (substitution $exists $t)]
-         [$exists (predicate-formula ∃ $x $predicate-formula)]]
+         [$exists (∃ $x $predicate-formula)]]
  :backward $substitute}
 
 {:name "exists-e"
  :args [$exists $proof $X]
- :forms [[$exists (predicate-formula ∃ $x $predicate-formula)]
-         [$proof ((var $x0) (substitution $exists $x0) ⊢ $X)]]
+ :forms [[$exists (∃ $x $predicate-formula)]
+         [$proof ((actual $x0) (substitution $exists $x0) ⊢ $X)]]
  :foreward $proof}
  

@@ -5,11 +5,10 @@
 
    E. g. (substitution (predicate-formula all x (P(x))) 'i) => (P(i))"
   [predicate-formula new-var]
-  (let [[pre _ var pred] predicate-formula]
-    (when (= pre 'predicate-formula)
-      (if (contains? (set (flatten pred)) new-var) ; TODO aufpassen!!! f(x)-Beispiel
-        (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" pred"\".")))
-        (clojure.walk/prewalk-replace {var new-var} pred)))))
+  (let [[_ var pred] predicate-formula]
+    (if (contains? (set (flatten pred)) new-var) ; TODO aufpassen!!! f(x)-Beispiel
+      (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" pred"\".")))
+        (clojure.walk/prewalk-replace {var new-var} pred))))
 
 (defn- rewrite
   "Rewrite a rule form. (It is needed to use apply-rule-rewrite)

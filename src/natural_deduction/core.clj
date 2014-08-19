@@ -46,17 +46,17 @@ stop
                   1 2 3))
 
 (pretty-printer (proof-step-foreward
-                  (build-proof '[(predicate-formula ∃ x (P(x))) INFER X])
+                  (build-proof '[(∃ x (P(x))) INFER X])
                   (get-rule rules "exists-e")
                   1 2 3))
 
 (pretty-printer (proof-step-backward
-                  (build-proof '[(var i) INFER (predicate-formula ∃ x (P(x)))])
+                  (build-proof '[(actual i) INFER (∃ x (P(x)))])
                   (get-rule rules "exists-i")
                   1 2 3))
 
 (pretty-printer (proof-step-backward
-                  (build-proof '[(var i) (P (i)) INFER (predicate-formula ∃ x (P(x)))])
+                  (build-proof '[(actual i) (P (i)) INFER (∃ x (P(x)))])
                   (get-rule rules "exists-i")
                   1 3 4))
 
@@ -128,7 +128,7 @@ stop
 ; predicate logic
 
 (pretty-printer
-  (-> (build-proof '[((predicate-formula ∀ x (P(x))) ∧ (predicate-formula ∀ x (Q(x)))) INFER (predicate-formula ∀ x ((P(x)) ∧ (Q(x))))])
+  (-> (build-proof '[((∀ x (P(x))) ∧ (∀ x (Q(x)))) INFER (∀ x ((P(x)) ∧ (Q(x))))])
     (proof-step-foreward (get-rule rules "and-e1") 1 2)
     (proof-step-foreward (get-rule rules "and-e2") 1 3)
     (proof-step-backward (get-rule rules "all-i") 4 5)

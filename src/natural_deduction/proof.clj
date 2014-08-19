@@ -103,9 +103,13 @@
   [file]
   (read-string (str "#{" (slurp (clojure.string/replace file "\\" "/")) "}")))
 
+(defn get-rules
+  [rules rule-name]
+  (clojure.set/select #(= (:name %) rule-name) rules))
+
 (defn get-rule
   [rules rule-name]
-  (first (clojure.set/select #(= (:name %) rule-name) rules)))
+  (first (get-rules rules rule-name)))
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
@@ -238,7 +242,7 @@
                   ; * single element backward
                   ;
                   ; a ... b -> a c ... b
-                  ; * single element foreward
+                  ; * single element foreward (Does this case exist?)
                   ;
                   ; a ... b -> a b
                   ; * single element foreward/backward (interim) solution
@@ -289,8 +293,7 @@
 	                      (postwalk-replace
 	                        {todo-siblings (vec (concat todo-siblings-before sub-proofs (postwalk-replace {old-b b} todo-siblings-after)))}
 	                        proof)
-                      )))
-    ))))))
+                      )))))))))
 
 (defn proof-step-foreward
   [proof rule & hashes]
