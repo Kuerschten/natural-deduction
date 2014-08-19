@@ -48,46 +48,56 @@
     (reset! counter 0)
     (build-subproof proof :premise)))
 
-(defn- get-line
-  [proof elem]
-  (inc (.indexOf (flatten proof) elem)))
+(defn- hash2line
+  [proof hash]
+  (let [fp (vec (flatten proof))
+        elem (first (filter #(= (:hash %) hash) fp))]
+    (inc (.indexOf fp elem))))
+
+(defn- line2hash
+  [proof line]
+  (:hash (get (vec (flatten proof)) (dec line))))
 
 (defn- build-pretty-string
   "Get a transformed proof element and return a pretty String of this element.
    A body with :todo becomes a \"...\"
 
-   E.g.  {:body a, :hash 1, :rule :premise} => \"a (#1 :premise)\""
-  [elem]
-  (let [r (:rule elem)]
+   E.g.  {:body a, :hash 1, :rule :premise} => \"a (:premise)\""
+  [elem proof]
+  (let [r (postwalk #(if (number? %)
+                        (hash2line proof %)
+                        %)
+                        (:rule elem))]
     (str (if (= (:body elem) :todo)
            "..."
            (:body elem))
-         "\t(#"
-         (:hash elem)
-         (when r (str "\t" r))
-         ")")))
+         (when r (str "    (" r ")")))))
 
 (defn pretty-printer
   "Gets a transformed proof and print it on the stdout.
    Returns nil."
   ([proof]
-    (pretty-printer proof 0))
+    (pretty-printer proof 0 proof))
   
-  ([proof lvl]
+  ([proof lvl complete-proof]
     (let [p (postwalk #(if (and (seq? %) (not (list? %))) (apply list %) %) proof)]
       (doseq [elem p]
         (if (vector? elem)
           (do
+            (print "      ")
 	          (dotimes [_ lvl] (print "| "))
 	          (dotimes [_ (- 40 lvl)] (print "--"))
 	          (println)
-	          (pretty-printer elem (inc lvl))
+	          (pretty-printer elem (inc lvl) complete-proof)
+            (print "      ")
 	          (dotimes [_ lvl] (print "| "))
 	          (dotimes [_ (- 40 lvl)] (print "--"))
 	          (println))
-	        (do
+	        (let [line (hash2line complete-proof (:hash elem))]
+            (dotimes [_ (- 4 (count (str line)))] (print " "))
+            (print (str line ": "))
 	          (dotimes [_ lvl] (print "| "))
-	          (println (build-pretty-string elem))))))))
+	          (println (build-pretty-string elem complete-proof))))))))
 
 (defn load-rules
   "Load a file and returns a hashmap with all rules."
@@ -138,8 +148,9 @@
       )))
 
 (defn- proof-step
-  [proof rule foreward? hashes]
-  (let [elems (flatten (filter
+  [proof rule foreward? lines]
+  (let [hashes (map #(line2hash proof %) lines)
+        elems (flatten (filter
                          (fn [x] (some
                                    (fn [y] (= (:hash x) y))
                                    hashes))
