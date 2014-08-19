@@ -71,7 +71,6 @@
     (str (if (= (:body elem) :todo)
            "..."
            (:body elem))
-         (str " #" (:hash elem))
          (when r (str "    (" r ")")))))
 
 (defn pretty-printer

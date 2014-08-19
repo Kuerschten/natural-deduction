@@ -6,10 +6,6 @@ rule args -> antecedent-steps (or-e #2)
 
 =====
 
-Zeilenorientiertes Arbeites -> Hashes verbergen
- + proof-step anpassen
- + pretty-printer anpassen
- + tests anpassen
 proof-step fertig machen
 bewiesene Theoreme wiederverwenden
 Beispielbeweise
