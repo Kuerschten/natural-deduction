@@ -118,6 +118,50 @@ stop
     (proof-step-foreward (get-rule rules "impl-e2") 2 6 7)
     ))
 
+; 17.a
+(pretty-printer
+  (-> (build-proof '[((P ∧ Q) ∧ R) (S ∧ T) INFER (Q ∧ S)])
+    (proof-step-foreward (get-rule rules "and-e1") 1 3)
+    (proof-step-foreward (get-rule rules "and-e1") 2 4)
+    (proof-step-foreward (get-rule rules "and-e2") 3 5)
+    (proof-step-foreward (get-rule rules "and-i2") 4 5 6)
+    ))
+
+; 17.b
+(pretty-printer
+  (-> (build-proof '[(P ∧ Q) INFER (Q ∧ P)])
+    (proof-step-foreward (get-rule rules "and-e1") 1 2)
+    (proof-step-foreward (get-rule rules "and-e2") 1 3)
+    (proof-step-foreward (get-rule rules "and-i2") 2 3 4)
+    ))
+
+; 17.c
+(pretty-printer
+  (-> (build-proof '[((P ∧ Q) ∧ R) INFER (P ∧ (Q ∧ R))])
+    (proof-step-foreward (get-rule rules "and-e1") 1 2)
+    (proof-step-foreward (get-rule rules "and-e1") 2 3)
+    (proof-step-foreward (get-rule rules "and-e2") 1 4)
+    (proof-step-foreward (get-rule rules "and-e2") 2 5)
+    (proof-step-foreward (get-rule rules "and-i2") 4 5 6)
+    (proof-step-foreward (get-rule rules "and-i1") 3 6 7)
+    ))
+
+; 17.d
+(pretty-printer
+  (-> (build-proof '[(P → (P → Q)) P INFER Q])
+    (proof-step-foreward (get-rule rules "impl-e2") 1 2 3)
+    (proof-step-foreward (get-rule rules "impl-e1") 2 3 4)
+    ))
+
+; 17.e
+(pretty-printer
+  (-> (build-proof '[(Q → (P → R)) (¬ R) Q INFER (¬ P)])
+    (proof-step-foreward (get-rule rules "impl-e2") 1 3 4)
+    (proof-step-backward (get-rule rules "not-i") 5 6)
+    (proof-step-foreward (get-rule rules "impl-e2") 4 5 6)
+    (proof-step-foreward (get-rule rules "not-e2") 2 6 7)
+   ))
+
 ; 17.f
 (pretty-printer
   (-> (build-proof '[INFER ((P ∧ Q) → P)])
