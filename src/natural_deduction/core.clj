@@ -65,58 +65,58 @@ stop
 (pretty-printer
   (-> (build-proof '[P INFER (¬ (¬ P))])
     (proof-step-backward (get-rule rules "not-i")  2 3)
-    (proof-step-foreward (get-rule rules "not-e1")  1 4 5)
+    (proof-step-foreward (get-rule rules "not-e1")  1 2 3)
     ))
 
 ; 16.b
 (pretty-printer
   (-> (build-proof '[(¬ (¬ P)) INFER P])
     (proof-step-backward (get-rule rules "raa")  2 3)
-    (proof-step-foreward (get-rule rules "not-e2") 1 4 5)
+    (proof-step-foreward (get-rule rules "not-e2") 1 2 3)
     ))
 
 ; 16.c
 (pretty-printer
   (-> (build-proof '[(P → Q) (¬ Q) INFER (¬ P)])
     (proof-step-backward (get-rule rules "not-i") 3 4)
-    (proof-step-foreward (get-rule rules "impl-e2") 1 5 6)
-    (proof-step-foreward (get-rule rules "not-e2") 2 8 6)
+    (proof-step-foreward (get-rule rules "impl-e2") 1 3 4)
+    (proof-step-foreward (get-rule rules "not-e2") 2 4 5)
     ))
 
 ; 16.d
 (pretty-printer
   (-> (build-proof '[INFER (P ∨ (¬ P))])
     (proof-step-backward (get-rule rules "raa") 1 2)
-    (proof-step-backward (get-rule rules "not-e2") 3 4 5)
-    (proof-step-backward (get-rule rules "or-i2") 4 6)
-    (proof-step-backward (get-rule rules "not-i") 4 7)
-    (proof-step-foreward (get-rule rules "or-i1") 8 9)
-    (unify 12 'new11 '(¬ P))
-    (proof-step-foreward (get-rule rules "not-e2") 3 12 9)
+    (proof-step-backward (get-rule rules "not-e2") 1 2 3)
+    (proof-step-backward (get-rule rules "or-i2") 2 3)
+    (proof-step-backward (get-rule rules "not-i") 2 3)
+    (proof-step-foreward (get-rule rules "or-i1") 2 3)
+    (unify 3 'new11 '(¬ P))
+    (proof-step-foreward (get-rule rules "not-e2") 1 3 4)
     ))
 
 ; 16.e
 (pretty-printer
   (-> (build-proof '[(P → Q) INFER ((¬ Q) → (¬ P))])
     (proof-step-backward (get-rule rules "impl-i") 2 3)
-    (proof-step-backward (get-rule rules "not-i") 5 6)
-    (proof-step-foreward (get-rule rules "impl-e2") 1 7 8)
-    (proof-step-foreward (get-rule rules "not-e2") 4 10 8)
+    (proof-step-backward (get-rule rules "not-i") 3 4)
+    (proof-step-foreward (get-rule rules "impl-e2") 1 3 4)
+    (proof-step-foreward (get-rule rules "not-e2") 2 4 5)
     ))
 
 ; 16.f
 (pretty-printer
   (-> (build-proof '[(P → Q) ((¬ P) → Q) (P ∨ (¬ P)) INFER Q]) ; (P ∨ (¬ P)) is proved in 16.d 
     (proof-step-foreward (get-rule rules "or-e") 3 4 5)
-    (proof-step-foreward (get-rule rules "impl-e2") 1 6 7)
-    (proof-step-foreward (get-rule rules "impl-e2") 2 9 10)
+    (proof-step-foreward (get-rule rules "impl-e2") 1 4 5)
+    (proof-step-foreward (get-rule rules "impl-e2") 2 6 7)
     ))
 
 ; 17.f
 (pretty-printer
   (-> (build-proof '[INFER ((P ∧ Q) → P)])
     (proof-step-backward (get-rule rules "impl-i") 1 2)
-    (proof-step-foreward (get-rule rules "and-e1") 3 4)
+    (proof-step-foreward (get-rule rules "and-e1") 1 2)
     ))
 
 ; predicate logic
@@ -124,9 +124,9 @@ stop
 (pretty-printer
   (-> (build-proof '[((predicate-formula ∀ x (P(x))) ∧ (predicate-formula ∀ x (Q(x)))) INFER (predicate-formula ∀ x ((P(x)) ∧ (Q(x))))])
     (proof-step-foreward (get-rule rules "and-e1") 1 2)
-    (proof-step-foreward (get-rule rules "and-e2") 1 2)
-    (proof-step-backward (get-rule rules "all-i") 2 3)
-    (proof-step-foreward (get-rule rules "all-e") 4 9 10)
-    (proof-step-foreward (get-rule rules "all-e") 5 9 10)
-    (proof-step-foreward (get-rule rules "and-i1") 12 13 10)
+    (proof-step-foreward (get-rule rules "and-e2") 1 3)
+    (proof-step-backward (get-rule rules "all-i") 4 5)
+    (proof-step-foreward (get-rule rules "all-e") 2 4 5)
+    (proof-step-foreward (get-rule rules "all-e") 3 4 6)
+    (proof-step-foreward (get-rule rules "and-i1") 5 6 7)
     ))

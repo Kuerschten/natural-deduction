@@ -71,6 +71,7 @@
     (str (if (= (:body elem) :todo)
            "..."
            (:body elem))
+         (str " #" (:hash elem))
          (when r (str "    (" r ")")))))
 
 (defn pretty-printer
@@ -129,8 +130,9 @@
            "\t\tresult: " (:backward r)))))
 
 (defn unify
-  [proof hash old new]
-  (let [old-step (first (filter #(= hash (:hash %)) (flatten proof)))
+  [proof line old new]
+  (let [hash (line2hash proof line)
+        old-step (first (filter #(= hash (:hash %)) (flatten proof)))
         new-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))
         new-proof (postwalk-replace {old-step new-step} proof)
         new-inner-proof (inner-proof new-step new-proof)
