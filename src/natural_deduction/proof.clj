@@ -94,8 +94,7 @@
 	          (dotimes [_ (- 40 lvl)] (print "--"))
 	          (println))
 	        (let [line (hash2line complete-proof (:hash elem))]
-            (dotimes [_ (- 4 (count (str line)))] (print " "))
-            (print (str line ": "))
+            (print (pp/cl-format nil "~4d: " line))
 	          (dotimes [_ lvl] (print "| "))
 	          (println (build-pretty-string elem complete-proof))))))))
 
@@ -167,7 +166,7 @@
         rule-return-index (when rule (.indexOf (:args rule) (if foreward? (:foreward rule) (:backward rule))))
         todo-index (.indexOf elems todo)]
     (cond
-      (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong hashes."))
+      (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong lines."))
       (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
       (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit."))
@@ -262,7 +261,10 @@
                         ; backward insertion
                         (if (= new-res (:body (last todo-siblings-before)))
                           ; (interim) solution
-                          (throw (UnsupportedOperationException. "backward solution (inside insertion) must get implemented"))
+                          (let [new-b (assoc old-b :rule (concat (list (:name rule)) (conj (vec (butlast (butlast hashes))) (:hash (last todo-siblings-before)))))]
+                            (postwalk-replace
+                              {todo-siblings (vec (concat todo-siblings-before (postwalk-replace {old-b new-b} todo-siblings-after)))}
+                              proof))
                             
                           ; new insertion
                           (let [c {:body new-res

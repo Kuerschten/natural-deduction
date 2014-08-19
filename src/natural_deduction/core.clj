@@ -1,6 +1,7 @@
 (ns natural-deduction.core
   (require 
     [clojure.core.logic]
+    [clojure.pprint :as pp]
     [clojure.walk :refer :all]))
 
 (load "scope")
@@ -53,6 +54,11 @@ stop
                   (build-proof '[(var i) INFER (predicate-formula ∃ x (P(x)))])
                   (get-rule rules "exists-i")
                   1 2 3))
+
+(pretty-printer (proof-step-backward
+                  (build-proof '[(var i) (P (i)) INFER (predicate-formula ∃ x (P(x)))])
+                  (get-rule rules "exists-i")
+                  1 3 4))
 
 ; proofs
 (def rules (load-rules "resources/rules/natdec.clj"))

@@ -9,3 +9,19 @@ rule args -> antecedent-steps (or-e #2)
 proof-step fertig machen
 bewiesene Theoreme wiederverwenden
 Beispielbeweise
+
+=====
+
+Beweissystem:
+ * Regeln
+ * Operatoen
+ (* Vatersystem)
+
+Theorem:
+ * Name
+ * Theorem
+ * bewiesenes Theorem
+
+Zu ladenes File (eine Datei)
+ * Beweissystem
+ * Liste aller Theroeme
