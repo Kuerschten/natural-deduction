@@ -15,7 +15,7 @@ Beispielbeweise
 
 Beweissystem:
  * Regeln
- * Operatoen
+ * Operatoren
  (* Vatersystem)
 
 Theorem:

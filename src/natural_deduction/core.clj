@@ -7,8 +7,11 @@
 (load "scope")
 (load "apply_rule")
 (load "proof")
+(load "file_handling")
 
 stop
+
+;; single tests
 
 (def rules (load-rules "resources/rules/natdec.clj"))
 
@@ -160,13 +163,38 @@ stop
     (proof-step-backward (get-rule rules "not-i") 5 6)
     (proof-step-foreward (get-rule rules "impl-e2") 4 5 6)
     (proof-step-foreward (get-rule rules "not-e2") 2 6 7)
-   ))
+    ))
 
 ; 17.f
 (pretty-printer
   (-> (build-proof '[INFER ((P ∧ Q) → P)])
     (proof-step-backward (get-rule rules "impl-i") 1 2)
     (proof-step-foreward (get-rule rules "and-e1") 1 2)
+    ))
+
+; 17.g
+(pretty-printer
+  (-> (build-proof '[P INFER ((P → Q) → Q)])
+    (proof-step-backward (get-rule rules "impl-i") 2 3)
+    (proof-step-foreward (get-rule rules "impl-e1") 1 2 3)
+    ))
+
+; 17.h
+(pretty-printer
+  (-> (build-proof '[((P → R) ∧ (Q → R)) INFER ((P ∧ Q) → R)])
+    (proof-step-backward (get-rule rules "impl-i") 2 3)
+    (proof-step-foreward (get-rule rules "and-e1") 1 3)
+    (proof-step-foreward (get-rule rules "and-e1") 2 4)
+    (proof-step-foreward (get-rule rules "impl-e2") 3 4 5)
+    ))
+
+; 17.i
+(pretty-printer
+  (-> (build-proof '[(Q → R) INFER ((P → Q) → (P → R))])
+    (proof-step-backward (get-rule rules "impl-i") 2 3)
+    (proof-step-backward (get-rule rules "impl-i") 3 4)
+    (proof-step-foreward (get-rule rules "impl-e2") 2 3 4)
+    (proof-step-foreward (get-rule rules "impl-e2") 1 4 5)
     ))
 
 ; predicate logic

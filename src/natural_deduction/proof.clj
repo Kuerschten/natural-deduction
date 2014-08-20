@@ -98,11 +98,6 @@
 	          (dotimes [_ lvl] (print "| "))
 	          (println (build-pretty-string elem complete-proof))))))))
 
-(defn load-rules
-  "Load a file and returns a hashmap with all rules."
-  [file]
-  (read-string (str "#{" (slurp (clojure.string/replace file "\\" "/")) "}")))
-
 (defn get-rules
   [rules rule-name]
   (clojure.set/select #(= (:name %) rule-name) rules))
