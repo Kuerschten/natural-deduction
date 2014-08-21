@@ -100,7 +100,7 @@
 
 (defn get-rules
   [rules rule-name]
-  (clojure.set/select #(= (:name %) rule-name) rules))
+  (clojure.set/select #(= (:name %) rule-name) (set rules)))
 
 (defn get-rule
   [rules rule-name]
@@ -109,22 +109,12 @@
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
   [rules]
-  (doseq
-    [r (filter :foreward rules)]
-    (println
-      (str (:name r)
-           "\t\targuments: " (apply str (interpose ", " (:args r)))
-           "\t\tresult: " (:foreward r)))))
+  (pp/print-table (map #(hash-map 'name (:name %) 'arguments (:args %) 'result (:foreward %)) (filter :foreward rules))))
 
 (defn show-all-backward-rules
   "Prints all loaded rules that runs backward."
   [rules]
-  (doseq
-    [r (filter :backward rules)]
-    (println
-      (str (:name r)
-           "\t\targuments: " (apply str (interpose ", " (:args r)))
-           "\t\tresult: " (:backward r)))))
+  (pp/print-table (map #(hash-map 'name (:name %) 'arguments (:args %) 'result (:backward %)) (filter :backward rules))))
 
 (defn unify
   [proof line old new]

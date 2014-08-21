@@ -13,7 +13,7 @@ stop
 
 ;; single tests
 
-(def rules (load-rules "resources/rules/natdec.clj"))
+(def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
 
 ; foreward
 (pretty-printer (proof-step-foreward
@@ -64,7 +64,7 @@ stop
                   1 3 4))
 
 ; proofs
-(def rules (load-rules "resources/rules/natdec.clj"))
+(def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
 
 ; propositional calculus
 
