@@ -71,7 +71,7 @@
     (str (if (= (:body elem) :todo)
            "..."
            (:body elem))
-         (when r (str "    (" r ")")))))
+         (when r (str "    " r)))))
 
 (defn pretty-printer
   "Gets a transformed proof and print it on the stdout.

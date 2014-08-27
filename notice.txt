@@ -21,7 +21,7 @@ Beweissystem:
 Theorem:
  * Name
  * Theorem
- * bewiesenes Theorem
+ * bewiesenes Theorem (auslagern in zu speichernde datei? Wie?)
 
 Zu ladenes File (eine Datei)
  * Beweissystem

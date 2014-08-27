@@ -1,5 +1,5 @@
 :operators
-(∀ ∃ actual substitution ⊢ INFER)
+(∀ ∃ actual)
 
 :rules
 ( ; ALL

@@ -15,7 +15,7 @@
         proofsystems (map
                        #(read-string (str "{" (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))) "}"))
                        (:proofsystems masterfile))
-        operators (set (apply concat (map #(conj (:operators %) 'substitution '⊢ 'INFER) proofsystems)))
+        operators (set (conj (apply concat (map :operators proofsystems)) 'substitution '⊢ 'INFER))
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
         theorems (apply concat (map
                                  #(read-string (str "(" (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))) ")"))

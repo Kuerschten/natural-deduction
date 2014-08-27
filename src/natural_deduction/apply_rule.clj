@@ -1,5 +1,37 @@
 (ns natural-deduction.core)
 
+(defn reform-proofed-theorem
+  [theorem operators]
+  (let [raw-theorem (:theorem theorem)
+        proofed (:proofed theorem)
+        bodies (set (map :body (flatten proofed)))
+        name (:name theorem)]
+    (if (and
+          proofed
+          (not (contains? bodies :todo)))
+      
+      ; theorem is proofed -> reform raw-theorem
+      (let [replacement-map (zipmap (distinct (filter #(not (contains? operators %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
+            forms (postwalk-replace
+                    replacement-map
+                    (vec (map
+                           vector
+                           (map #(read-string (str "$" %)) (range (count replacement-map) (+ (count replacement-map) (count raw-theorem))))
+                           (filter
+                             #(and (not= 'INFER %) (not= '⊢ %))
+                             raw-theorem)
+                           )))]
+       {:name name
+        :args (vec (map first forms))
+        :forms (vec forms)
+        :foreward (last (map first forms))
+        :backward (last (butlast (map first forms)))
+        }
+       )
+      
+      ; not proofed theorem
+      (throw (IllegalArgumentException. "Theorem is not proofed now.")))))
+
 (defn- substitution
   "Substitutes a  predicate formula with a new variable.
 
@@ -7,7 +39,7 @@
   [predicate-formula new-var]
   (let [[_ var pred] predicate-formula]
     (if (contains? (set (flatten pred)) new-var) ; TODO aufpassen!!! f(x)-Beispiel
-      (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" pred"\".")))
+     (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" pred"\".")))
         (clojure.walk/prewalk-replace {var new-var} pred))))
 
 (defn- rewrite

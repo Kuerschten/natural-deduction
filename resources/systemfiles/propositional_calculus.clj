@@ -1,5 +1,5 @@
 :operators
-(∧ ∨ → ¬ ⊥ ⊢ INFER)
+(∧ ∨ → ¬ ⊥)
 
 :rules
 ( ; SAME
