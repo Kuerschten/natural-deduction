@@ -106,6 +106,10 @@
   [rules rule-name]
   (first (get-rules rules rule-name)))
 
+(defn get-theorem
+  [theorems theorem-name]
+  (first (clojure.set/select #(= (:name %) theorem-name) (set theorems))))
+
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
   [rules]

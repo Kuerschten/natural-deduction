@@ -64,9 +64,10 @@ stop
                   1 3 4))
 
 ; proofs
-(def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
-(def theorems (:theorems (read-masterfile "resources/systemfiles/LfM.clj")))
-(def operators (:operators (read-masterfile "resources/systemfiles/LfM.clj")))
+(def master-file (read-proofed-theorems "resources/systemfiles/LfM_proofed_theorems.clj" (read-masterfile "resources/systemfiles/LfM.clj")))
+(def rules (:rules master-file))
+(def theorems (:theorems master-file))
+(def operators (:operators master-file))
 
 ; propositional calculus
 
@@ -118,7 +119,7 @@ stop
 ; 16.f
 (pretty-printer
   (-> (build-proof '[(P → Q) ((¬ P) → Q) INFER Q])
-    (proof-step-foreward (reform-proofed-theorem (first theorems) operators) 3)
+    (proof-step-foreward (reform-proofed-theorem (get-theorem theorems "16.d") operators) 3)
     (unify 3 'new6 'P)
     (proof-step-foreward (get-rule rules "or-e") 3 4 5)
     (proof-step-foreward (get-rule rules "impl-e2") 1 4 5)

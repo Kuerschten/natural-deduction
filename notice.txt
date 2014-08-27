@@ -1,12 +1,10 @@
 :todo -> proofobligation
 rule args -> antecedent-steps (or-e #2)
-(var i) -> (object/actual/element i)
 
 (tex-Output: beweise) -> Bachelorarbeit
 
 =====
 
-bewiesene Theoreme wiederverwenden
 Beispielbeweise
 
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
@@ -21,7 +19,7 @@ Beweissystem:
 Theorem:
  * Name
  * Theorem
- * bewiesenes Theorem (auslagern in zu speichernde datei? Wie?)
+ * Beweis (ausgelagert in zu speichernder Datei)
 
 Zu ladenes File (eine Datei)
  * Beweissystem

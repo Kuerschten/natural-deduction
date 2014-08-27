@@ -3,7 +3,7 @@
 (defn reform-proofed-theorem
   [theorem operators]
   (let [raw-theorem (:theorem theorem)
-        proofed (:proofed theorem)
+        proofed (:proof theorem)
         bodies (set (map :body (flatten proofed)))
         name (:name theorem)]
     (if (and
