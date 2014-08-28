@@ -28,4 +28,4 @@
 	 :args [$exists $proof $X]
 	 :forms [[$exists (∃ $x $predicate-formula)]
 	         [$proof ((actual $x0) (substitution $exists $x0) ⊢ $X)]]
-	 :foreward $proof})
+	 :backward true})

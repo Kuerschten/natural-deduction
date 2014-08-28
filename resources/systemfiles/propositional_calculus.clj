@@ -6,105 +6,99 @@
 	{:name "same"
 	 :args [$a $b]
 	 :forms [[$a $b]]
-	 :foreward $b
-	 :backward $a}
+	 :foreward true
+	 :backward true}
 	
 	; AND
-	{:name "and-e1"
+	{:name "and-e-left"
 	 :args [$and $a]
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward $a}
+	 :foreward true}
 	
-	{:name "and-e2"
+	{:name "and-e-right"
 	 :args [$and $b]
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward $b}
+	 :foreward true}
 	
-	{:name "and-i1"
+	{:name "and-i"
 	 :args [$a $b $and]
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward $and}
+	 :foreward true}
 	
-	{:name "and-i2"
-	 :args [$a $b $and]
-	 :forms [[$and ($b ∧ $a)]]
-	 :foreward $and}
+	{:name "and-i-backward"
+	 :args [$ab $and]
+	 :forms [[$and ($a ∧ $b)]
+           [$ab (multiple-introductions $a $b)]]
+	 :backward true}
 	
-	{:name "and-i1-backward"
+	{:name "and-i-left"
 	 :args [$a $and]
 	 :forms [[$and ($a ∧ $b)]]
-	 :backward $a}
+	 :backward true}
 	
-	{:name "and-i2-backward"
+	{:name "and-i-right"
 	 :args [$b $and]
 	 :forms [[$and ($a ∧ $b)]]
-	 :backward $b}
+	 :backward true}
 	
 	; OR
 	{:name "or-e"
 	 :args [$or $proofs $X]
 	 :forms [[$or ($a ∨ $b)]
 	         [$proofs (($a ⊢ $X)($b ⊢ $X))]]
-	 :foreward $proofs}
+	 :backward true}
 	
-	{:name "or-i1"
+	{:name "or-i-left"
 	 :args [$a $or]
 	 :forms [[$or ($a ∨ $b)]]
-	 :foreward $or
-	 :backward $a}
+	 :foreward true
+	 :backward true}
 	
-	{:name "or-i2"
+	{:name "or-i-right"
 	 :args [$b $or]
 	 :forms [[$or ($a ∨ $b)]]
-	 :foreward $or
-	 :backward $b}
+	 :foreward true
+	 :backward true}
 	
 	; IMPL
-	{:name "impl-e1"
+	{:name "impl-e"
 	 :args [$a $impl $b]
 	 :forms [[$impl ($a → $b)]]
-	 :foreward $b}
-	
-	{:name "impl-e2"
-	 :args [$impl $a $b]
-	 :forms [[$impl ($a → $b)]]
-	 :foreward $b}
+	 :foreward true}
 	
 	{:name "impl-i"
 	 :args [$proof $impl]
 	 :forms [[$proof ($a ⊢ $b)]
 	         [$impl ($a → $b)]]
-	 :backward $proof}
+	 :backward true}
 	
 	; NOT
-	{:name "not-e1"
+	{:name "not-e"
 	 :args [$a $not $contradiction]
 	 :forms [[$not (¬ $a)]
 	         [$contradiction ⊥]]
-	 :foreward $contradiction
-	 :backward $not}
-	
-	{:name "not-e2"
-	 :args [$not $a $contradiction]
-	 :forms [[$not (¬ $a)]
+	 :foreward true}
+ 
+	{:name "not-e-backward"
+	 :args [$anota $contradiction]
+	 :forms [[$anota (multiple-introductions $a (¬ $a))]
 	         [$contradiction ⊥]]
-	 :foreward $contradiction
-	 :backward $a}
+	 :backward true}
 	
 	{:name "not-i"
 	 :args [$proof $res]
 	 :forms [[$proof ($a ⊢ ⊥)]
 	         [$res (¬ $a)]]
-	 :backward $proof}
+	 :backward true}
 	
 	; RAA, ⊥
 	{:name "efq"
 	 :args [$contradiction $a]
 	 :forms [[$contradiction ⊥]]
-	 :foreward $a
-	 :backward $contradiction}
+	 :foreward true
+	 :backward true}
 	
 	{:name "raa"
 	 :args [$proof $a]
 	 :forms [[$proof ((¬ $a) ⊢ ⊥)]]
-	 :backward $proof})
+	 :backward true})

@@ -7,6 +7,8 @@ rule args -> antecedent-steps (or-e #2)
 
 Beispielbeweise
 
+Permutationen der Argumente
+
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
 
 =====

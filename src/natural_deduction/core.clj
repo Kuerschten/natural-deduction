@@ -2,7 +2,8 @@
   (require 
     [clojure.core.logic]
     [clojure.pprint :as pp]
-    [clojure.walk :refer :all]))
+    [clojure.walk :refer :all]
+    [clojure.math.combinatorics :as combo]))
 
 (load "scope")
 (load "apply_rule")
@@ -16,14 +17,19 @@ stop
 (def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
 
 ; foreward
-(pretty-printer (proof-step-foreward
-                  (build-proof '[a b INFER (b ∧ a)])
-                  (get-rule rules "and-i2")
-                  1 2 3))
+(pretty-printer
+  (-> (build-proof '[a b INFER (b ∧ a)])
+    (proof-step-foreward (get-rule rules "and-i") 1 2 3)
+    (choose-option 3 1)))
+
+(pretty-printer
+  (-> (build-proof '[a b INFER c])
+    (proof-step-foreward (get-rule rules "and-i") 1 2 3)
+    (choose-option 3 1)))
 
 (pretty-printer (proof-step-foreward
-                  (build-proof '[a b INFER c])
-                  (get-rule rules "and-i2")
+                  (build-proof '[a (a → b) INFER b])
+                  (get-rule rules "impl-e")
                   1 2 3))
 
 ; backward
@@ -43,12 +49,12 @@ stop
                   2 3))
 
 ; inside
-(pretty-printer (proof-step-foreward
+(pretty-printer (proof-step-backward
                   (build-proof '[(a ∨ b) INFER X])
                   (get-rule rules "or-e")
                   1 2 3))
 
-(pretty-printer (proof-step-foreward
+(pretty-printer (proof-step-backward
                   (build-proof '[(∃ x (P(x))) INFER X])
                   (get-rule rules "exists-e")
                   1 2 3))
@@ -121,7 +127,7 @@ stop
   (-> (build-proof '[(P → Q) ((¬ P) → Q) INFER Q])
     (proof-step-foreward (reform-proofed-theorem (get-theorem theorems "16.d") operators) 3)
     (unify 3 'new6 'P)
-    (proof-step-foreward (get-rule rules "or-e") 3 4 5)
+    (proof-step-backward (get-rule rules "or-e") 3 4 5)
     (proof-step-foreward (get-rule rules "impl-e2") 1 4 5)
     (proof-step-foreward (get-rule rules "impl-e2") 2 6 7)
     ))
