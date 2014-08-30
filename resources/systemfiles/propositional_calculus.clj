@@ -77,13 +77,8 @@
 	 :args [$a $not $contradiction]
 	 :forms [[$not (¬ $a)]
 	         [$contradiction ⊥]]
-	 :foreward true}
- 
-	{:name "not-e-backward"
-	 :args [$anota $contradiction]
-	 :forms [[$anota (multiple-introductions $a (¬ $a))]
-	         [$contradiction ⊥]]
-	 :backward true}
+	 :foreward true
+   :backward true}
 	
 	{:name "not-i"
 	 :args [$proof $res]
