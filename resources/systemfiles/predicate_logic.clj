@@ -5,7 +5,7 @@
 ( ; ALL
   {:name "all-i"
 	 :args [$proof $all]
-	 :forms [[$proof ((actual $i) ⊢ (substitution $all $i))]
+	 :forms [[$proof ((actual $i) ⊢ (substitution $predicate-formula $x $i))]
 	         [$all (∀ $x $predicate-formula)]]
 	 :backward $proof}
 	
@@ -13,19 +13,19 @@
 	 :args [$all $actual $substitute]
 	 :forms [[$all (∀ $x $predicate-formula)]
 	         [$actual (actual $t)]
-	         [$substitute (substitution $all $t)]]
+	         [$substitute (substitution $predicate-formula $x $t)]]
 	 :foreward $substitute}
 	
 	; EXISTS
 	{:name "exists-i"
 	 :args [$actual $substitute $exists]
 	 :forms [[$actual (actual $t)]
-	         [$substitute (substitution $exists $t)]
+	         [$substitute (substitution $predicate-formula $x $t)]
 	         [$exists (∃ $x $predicate-formula)]]
 	 :backward $substitute}
 	
 	{:name "exists-e"
 	 :args [$exists $proof $X]
 	 :forms [[$exists (∃ $x $predicate-formula)]
-	         [$proof ((actual $x0) (substitution $exists $x0) ⊢ $X)]]
+	         [$proof ((actual $x0) (substitution $predicate-formula $x $x0) ⊢ $X)]]
 	 :backward true})
