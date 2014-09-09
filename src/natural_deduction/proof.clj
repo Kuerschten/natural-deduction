@@ -126,14 +126,14 @@
         old-step (first (filter #(= hash (:hash %)) (flatten proof)))
         new-proof (postwalk-replace {old-step new-step} proof)
         new-inner-proof (inner-proof new-step new-proof)
-        new-step-index (.indexOf new-proof new-step)]
+        new-step-index (.indexOf new-inner-proof new-step)]
     (if (and
           (= :todo (:body (get new-inner-proof (inc new-step-index))))
           (= (:body new-step) (:body (get new-inner-proof (+ 2 new-step-index)))))
       ; (sub)proof
       (postwalk-replace
-        {new-inner-proof (vec (filter #(and (not= (:hash %) (:hash (nth new-proof (inc new-step-index))))
-                                            (not= (:hash %) (:hash (nth new-proof (+ 2 new-step-index)))))
+        {new-inner-proof (vec (filter #(and (not= (:hash %) (:hash (get (vec new-inner-proof) (inc new-step-index))))
+                                            (not= (:hash %) (:hash (get (vec new-inner-proof) (+ 2 new-step-index)))))
                                       new-inner-proof))}
         new-proof)
       
@@ -229,7 +229,7 @@
              
              ; backwards
              (let [old-a (last elems)]
-               (if (= (first new-res) 'multiple-introductions)
+               (if (and (seq? new-res)(= (first new-res) 'multiple-introductions))
                  ; multiple introduction
                  (let [multi-b (doall (map
                                         #(hash-map
