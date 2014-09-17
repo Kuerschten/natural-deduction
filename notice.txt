@@ -7,10 +7,9 @@ rule args -> antecedent-steps (or-e #2)
 
 Beispielbeweise
 
-multiple-introductions auch mit unterbeweisen?
 unifizierbarkeit in allen Zeilen!?
 
-Rückwärtsanwendbarkeit für Prädikatenlogik
+Rückwärtsanwendbarkeit für Prädikatenlogik???
 
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
 

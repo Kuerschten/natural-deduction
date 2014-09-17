@@ -130,7 +130,7 @@
     (if (and
           (= :todo (:body (get new-inner-proof (inc new-step-index))))
           (= (:body new-step) (:body (get new-inner-proof (+ 2 new-step-index)))))
-      ; (sub)proof
+      ; (interim) solution
       (postwalk-replace
         {new-inner-proof (vec (filter #(and (not= (:hash %) (:hash (get (vec new-inner-proof) (inc new-step-index))))
                                             (not= (:hash %) (:hash (get (vec new-inner-proof) (+ 2 new-step-index)))))
@@ -164,19 +164,16 @@
                          (flatten proof)))
         todo (first (filter #(= (:body %) :todo) elems))
         args (map :body (filter #(not= todo %) elems))
-        scope (scope-from proof todo)
         elemts-in-scope? (every? true? (map
                                          (fn [x] (some
                                                    (fn [y] (= x y))
-                                                   scope))
+                                                   (scope-from proof todo)))
                                          elems))
-        ; rule-return-index (when rule (.indexOf (:args rule) (if foreward? (:foreward rule) (:backward rule)))) TODO: is it still neccessary?
         todo-index (.indexOf elems todo)]
     (cond
       (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong lines."))
       (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
-      ; (not= rule-return-index todo-index) (throw (IllegalArgumentException. "Order does not fit.")) TODO: is it still neccessary?
       
       :else ;; Build next proof
     (let [rules (map #(if  (:backward %) (assoc % :backward (last (butlast (:args %)))) %)
