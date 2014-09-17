@@ -16,6 +16,13 @@ stop
 
 (def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
 
+; test
+
+(pretty-printer
+  (-> (build-proof '[INFER (a → b)])
+    (proof-step-backward (get-rule rules "test") 1 2)
+    ))
+
 ; foreward
 (pretty-printer
   (-> (build-proof '[a b INFER (b ∧ a)])
@@ -223,5 +230,5 @@ stop
     (proof-step-foreward (get-rule rules "all-e") 2 4 5)
     (proof-step-foreward (get-rule rules "all-e") 3 4 6)
     (proof-step-foreward (get-rule rules "and-i") 5 6 7)
-    (choose-option 7 1) ; TODO choose-option should end sub proof... Problem with new-step-index ... :/
+    (choose-option 7 1)
     ))

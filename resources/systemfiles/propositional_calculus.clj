@@ -8,6 +8,13 @@
 	 :forms [[$a $b]]
 	 :foreward true
 	 :backward true}
+ 
+ ; test
+ {:name "test"
+  :args [$mix $erg]
+  :forms [[$mix (multiple-introductions ($a INFER $b) ($a ∧ $b))]
+          [$erg ($a → $b)]]
+  :backward true}
 	
 	; AND
 	{:name "and-e-left"
