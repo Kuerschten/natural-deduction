@@ -8,13 +8,6 @@
 	 :forms [[$a $b]]
 	 :foreward true
 	 :backward true}
- 
- ; test
- {:name "test"
-  :args [$iwas $mix $erg]
-  :forms [[$mix (multiple-introductions ($a INFER $b) ($a INFER $b))]
-          [$erg ($a → $b)]]
-  :backward true}
 	
 	; AND
 	{:name "and-e-left"
@@ -52,7 +45,7 @@
 	{:name "or-e"
 	 :args [$or $proofs $X]
 	 :forms [[$or ($a ∨ $b)]
-	         [$proofs (($a ⊢ $X)($b ⊢ $X))]]
+	         [$proofs (multiple-introductions ($a ⊢ $X)($b ⊢ $X))]]
 	 :backward true}
 	
 	{:name "or-i-left"

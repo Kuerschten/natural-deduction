@@ -16,13 +16,6 @@ stop
 
 (def rules (:rules (read-masterfile "resources/systemfiles/LfM.clj")))
 
-; test
-
-(pretty-printer
-  (-> (build-proof '[x INFER (a → b)])
-    (proof-step-backward (get-rule rules "test") 1 2 3)
-    ))
-
 ; foreward
 (pretty-printer
   (-> (build-proof '[a b INFER (b ∧ a)])
