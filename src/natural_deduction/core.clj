@@ -19,15 +19,15 @@ stop
 ; test
 
 (pretty-printer
-  (-> (build-proof '[INFER (a → b)])
-    (proof-step-backward (get-rule rules "test") 1 2)
+  (-> (build-proof '[x INFER (a → b)])
+    (proof-step-backward (get-rule rules "test") 1 2 3)
     ))
 
 ; foreward
 (pretty-printer
   (-> (build-proof '[a b INFER (b ∧ a)])
     (proof-step-foreward (get-rule rules "and-i") 1 2 3)
-    (choose-option 3 1)))
+    (choose-option 3 2)))
 
 (pretty-printer
   (-> (build-proof '[a b INFER c])
@@ -51,7 +51,7 @@ stop
                   1 2))
 
 (pretty-printer
-  (-> (build-proof '[INFER a])
+  (-> (build-proof '[INFER (¬ a)])
     (proof-step-backward (get-rule rules "not-i") 1 2)
     ))
 

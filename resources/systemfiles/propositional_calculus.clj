@@ -11,8 +11,8 @@
  
  ; test
  {:name "test"
-  :args [$mix $erg]
-  :forms [[$mix (multiple-introductions ($a INFER $b) ($a ∧ $b))]
+  :args [$iwas $mix $erg]
+  :forms [[$mix (multiple-introductions ($a INFER $b) ($a INFER $b))]
           [$erg ($a → $b)]]
   :backward true}
 	

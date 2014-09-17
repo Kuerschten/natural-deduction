@@ -229,18 +229,33 @@
              
              ; backwards
              (let [old-a (last elems)]
-               (if (and (seq? new-res)(= (first new-res) 'multiple-introductions))
+               (if (and (seq? new-res) (= (first new-res) 'multiple-introductions))
                  ; multiple introduction
-                 (let [multi-b (doall (map
-                                        #(hash-map
-                                           :body %
+                 (let [build-multi (fn [elem]
+                                     (if (and
+                                           (coll? elem)
+                                           (or
+                                             (contains? (set elem) 'INFER)
+                                             (contains? (set elem) '⊢)))
+                                       (list (build-subproof (vec elem)))
+                                       (list
+                                         (hash-map
+                                           :body :todo
                                            :hash (new-number)
                                            :rule nil)
-                                        (interpose :todo (rest new-res))))
-                       a (assoc old-a :rule (cons (:name rule) (map :hash (filter #(not= :todo (:body %)) multi-b))))]
-                  (postwalk-replace
-                       {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before (list todo) multi-b todo-siblings-after)))}
-                       proof))
+                                         (hash-map
+                                           :body elem
+                                           :hash (new-number)
+                                           :rule nil))))
+                       multi-b (doall (apply concat (map build-multi (rest new-res))))
+                       a (assoc old-a :rule (cons (:name rule) (map
+                                                                 #(if (vector? %)
+                                                                    (list 'between (:hash (first %)) (:hash (last %)))
+                                                                    (:hash %))
+                                                                 (filter #(not= :todo (:body %)) multi-b))))]
+                   (postwalk-replace
+                     {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before multi-b todo-siblings-after)))}
+                     proof))
                  
                  ; single element
                  (if (= new-res (:body (last todo-siblings-before)))
@@ -266,9 +281,6 @@
            ; a ... b -> a ... c b
            ; * single element backward
            ;
-           ; a ... b -> a c ... b
-           ; * single element foreward (Does this case exist?)
-           ;
            ; a ... b -> a b
            ; * single element foreward/backward (interim) solution
            :else
@@ -281,11 +293,10 @@
                  ; foreward insertion
                  (if (= new-res (:body (first todo-siblings-after)))
                    ; (interim) solution
-                   (throw (UnsupportedOperationException. "foreward solution (inside insertion) must get implemented"))
+                   (throw (UnsupportedOperationException. "foreward solution (inside insertion) must get implemented")) ; not needed until now.
                           
                    ; new insertion
-                   (throw (UnsupportedOperationException. "foreward new insertion (inside insertion) must get implemented"))
-                          )
+                   (throw (UnsupportedOperationException. "foreward new insertion (inside insertion) must get implemented"))) ; not needed until now.
                           
                  ; backward insertion
                  (if (= new-res (:body (last todo-siblings-before)))
