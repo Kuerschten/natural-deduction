@@ -131,11 +131,14 @@
           (= :todo (:body (get new-inner-proof (inc new-step-index))))
           (= (:body new-step) (:body (get new-inner-proof (+ 2 new-step-index)))))
       ; (interim) solution
-      (postwalk-replace
-        {new-inner-proof (vec (filter #(and (not= (:hash %) (:hash (get (vec new-inner-proof) (inc new-step-index))))
-                                            (not= (:hash %) (:hash (get (vec new-inner-proof) (+ 2 new-step-index)))))
-                                      new-inner-proof))}
-        new-proof)
+      (let [new-hash (:hash (get (vec new-inner-proof) (+ 2 new-step-index)))
+            new-result (assoc new-step :hash new-hash)]
+        (prewalk-replace
+          {new-inner-proof (vec (filter #(and (not= (:hash %) (:hash (get (vec new-inner-proof) (inc new-step-index))))
+                                              (not= (:hash %) (:hash (get (vec new-inner-proof) (+ 2 new-step-index)))))
+                                        new-inner-proof))
+           new-step new-result}
+          new-proof))
       
       ; new insertion
       new-proof)))
