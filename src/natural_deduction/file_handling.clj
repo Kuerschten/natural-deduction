@@ -25,11 +25,11 @@
      :theorems theorems}))
 
 (defn read-proofed-theorems
-  [file-path master-file-set]
+  [file-path master-file-hash-map]
   (let [proofed-theorems (apply list (read-string (slurp (path-conformer file-path))))
         replace-map (zipmap (map #(dissoc % :proof) proofed-theorems) proofed-theorems)
-        new-theorems (postwalk-replace replace-map (:theorems master-file-set))]
-    (assoc master-file-set :theorems new-theorems)))
+        new-theorems (postwalk-replace replace-map (:theorems master-file-hash-map))]
+    (assoc master-file-hash-map :theorems new-theorems)))
 
 (defn save-proofed-theorems
   [file-path theorems]

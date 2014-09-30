@@ -31,16 +31,6 @@
            [$ab (multiple-introductions $a $b)]]
 	 :backward true}
 	
-	{:name "and-i-left"
-	 :args [$a $and]
-	 :forms [[$and ($a ∧ $b)]]
-	 :backward true}
-	
-	{:name "and-i-right"
-	 :args [$b $and]
-	 :forms [[$and ($a ∧ $b)]]
-	 :backward true}
-	
 	; OR
 	{:name "or-e"
 	 :args [$or $proofs $X]
@@ -78,7 +68,7 @@
 	 :forms [[$not (¬ $a)]
 	         [$contradiction ⊥]]
 	 :foreward true
-   :backward true}
+	 :backward true}
 	
 	{:name "not-i"
 	 :args [$proof $res]

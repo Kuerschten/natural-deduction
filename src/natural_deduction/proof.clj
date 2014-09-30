@@ -41,12 +41,12 @@
    To get a proof you need a proof obligation (\"⊢\" or \"INFER\").
    An proof obligation gets the body :todo
 
-   E.g. [a ⊢ b] => [#{:body a, :hash 1, :rule :premise} #{:body :todo, :hash 2, :rule nil} #{:body b, :hash 3, :rule nil}]"
-  [proof]
-  {:pre [(vector? proof)]}
+   E.g. [a ⊢ b] => [{:body a, :hash 1, :rule :premise} {:body :todo, :hash 2, :rule nil} {:body b, :hash 3, :rule nil}]"
+  [theorem]
+  {:pre [(vector? theorem)]}
   (do
     (reset! counter 0)
-    (build-subproof proof :premise)))
+    (build-subproof theorem :premise)))
 
 (defn- hash2line
   [proof hash]
@@ -109,6 +109,13 @@
 (defn get-theorem
   [theorems theorem-name]
   (first (clojure.set/select #(= (:name %) theorem-name) (set theorems))))
+
+(defn add-proof-to-theorem
+  [theorems theorem-name proof]
+  (let [theorem (get-theorem theorems theorem-name)]
+    (postwalk-replace
+      {theorem (assoc theorem :proof proof)}
+      theorems)))  
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
@@ -277,9 +284,9 @@
                        proof))))))))))))
 
 (defn proof-step-foreward
-  [proof rule & hashes]
-  (proof-step proof rule true hashes))
+  [proof rule & lines]
+  (proof-step proof rule true lines))
 
 (defn proof-step-backward
-  [proof rule & hashes]
-  (proof-step proof rule false hashes))
+  [proof rule & lines]
+  (proof-step proof rule false lines))
