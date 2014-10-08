@@ -7,11 +7,23 @@ rule args -> antecedent-steps (or-e #2)
 
 Beispielbeweise
 
-unifizierbarkeit in allen Zeilen!?
+unifizierbarkeit in allen Zeilen!? - alle im inner-proof
 
-Rückwärtsanwendbarkeit für Prädikatenlogik???
+Rückwärtsanwendbarkeit für Prädikatenlogik??? - wichtiger als GUI
 
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
+
+evtl. keine GUI
+dafür Theoreme der Prädikatenlogik wiederverwenden
+
+Vorschläge GUI darstellung Beweis:
+ - Baumstruktur
+ - Wie Jape
+ - Andere Oberflächen
+
+Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
+
+Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction for LTL
 
 =====
 
