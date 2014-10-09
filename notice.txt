@@ -9,7 +9,7 @@ Beispielbeweise
 
 unifizierbarkeit in allen Zeilen!? - alle im inner-proof
 
-Rückwärtsanwendbarkeit für Prädikatenlogik??? - wichtiger als GUI
+Wiederanwendbarkeit für Prädikatenlogik??? - wichtiger als GUI
 
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
 
@@ -24,6 +24,7 @@ Vorschläge GUI darstellung Beweis:
 Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
 
 Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction for LTL
+ - i:<>A INFER i<=j j:A (<>-elim)
 
 =====
 

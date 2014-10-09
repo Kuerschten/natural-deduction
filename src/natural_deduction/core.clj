@@ -213,6 +213,19 @@ stop
     (proof-step-foreward (get-rule rules "impl-e") 1 4 5)
     ))
 
+; 17.j
+(pretty-printer
+  (-> (build-proof '[(P → Q) (R → S) INFER ((P ∨ R) → (Q ∨ S))])
+    (proof-step-backward (get-rule rules "impl-i") 3 4)
+    (proof-step-backward (get-rule rules "or-e") 3 4 5)
+    (proof-step-foreward (get-rule rules "impl-e") 1 4 5)
+    (proof-step-foreward (get-rule rules "or-i-left") 5 6)
+    (unify 6 'new15 'S)
+    (proof-step-foreward (get-rule rules "impl-e") 2 7 8)
+    (proof-step-foreward (get-rule rules "or-i-right") 8 9)
+    (unify 9 'new18 'Q)
+    ))
+
 ; predicate logic
 
 (pretty-printer
