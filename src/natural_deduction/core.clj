@@ -238,3 +238,11 @@ stop
     (proof-step-foreward (get-rule rules "and-i") 5 6 7)
     (choose-option 7 1)
     ))
+
+(pretty-printer
+  (-> (build-proof '[(∀ x (∀ y (P(x y)))) INFER (∀ u (∀ v (P(u v))))])
+    (proof-step-backward (get-rule rules "all-i") 2 3)
+    (proof-step-backward (get-rule rules "all-i") 3 4)
+    (proof-step-foreward (get-rule rules "all-e") 1 2 4)
+    (proof-step-foreward (get-rule rules "all-e") 3 4 5)
+  ))

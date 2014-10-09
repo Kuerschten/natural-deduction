@@ -128,8 +128,8 @@
   (pp/print-table (map #(hash-map 'name (:name %) 'arguments (:args %) 'result (:backward %)) (filter :backward rules))))
 
 (defn- update-proof
-  [proof line new-step]
-  (let [hash (line2hash proof line)
+  [proof new-step]
+  (let [hash (:hash new-step)
         old-step (first (filter #(= hash (:hash %)) (flatten proof)))
         new-proof (postwalk-replace {old-step new-step} proof)
         new-inner-proof (inner-proof new-step new-proof)
@@ -150,19 +150,33 @@
       ; new insertion
       new-proof)))
 
+(defn- unifiable?
+  [object]
+  (:unifiable? (meta object)))
+
 (defn unify
   [proof line old new]
   (let [hash (line2hash proof line)
-        old-step (first (filter #(= hash (:hash %)) (flatten proof)))
-        new-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))]
-    (update-proof proof line new-step)))
+        choosed-step (first (filter #(= hash (:hash %)) (flatten proof)))
+        marked-steps (filter #(contains? (set (flatten (:body %))) old) (flatten (inner-proof choosed-step proof)))]
+    (loop
+      [p proof
+       ms marked-steps]
+      (if (= (count ms) 0)
+        p
+        (let [old-step (first ms)
+              elem (first (filter #(= old %) (set (flatten (:body old-step)))))
+              new-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))]
+          (if (unifiable? elem)
+            (recur (update-proof p new-step) (rest ms))
+            (recur p (rest ms))))))))
 
 (defn choose-option
   [proof line option]
   (let [hash (line2hash proof line)
         old-step (first (filter #(= hash (:hash %)) (flatten proof)))
         new-step (assoc old-step :body (get (:body old-step) option))]
-    (update-proof proof line new-step)))
+    (update-proof proof new-step)))
 
 (defn- proof-step
   [proof rule foreward? lines]
