@@ -13,37 +13,37 @@
   [theorem operators]
   (let [;raw-theorem (:theorem theorem)
         raw-theorem (prewalk #(if (predicate? % operators)
-                                (symbol (apply str (concat (list (first %) "_") (interpose "_" (second %)))))
+                                (symbol (str %))
                                 %)
                              (:theorem theorem))
         proofed (:proof theorem)
         bodies (set (map :body (flatten proofed)))
         name (:name theorem)]
     (if (and
-          proofed
-          (not (contains? bodies :todo)))
+         proofed
+         (not (contains? bodies :todo)))
       
-      ; theorem is proofed -> reform raw-theorem
-      (let [replacement-map (zipmap (distinct (filter #(not (contains? operators %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
-            forms (postwalk-replace
-                    replacement-map
-                    (vec (map
-                           vector
-                           (map #(read-string (str "$" %)) (range (count replacement-map) (+ (count replacement-map) (count raw-theorem))))
-                           (filter
-                             #(and (not= 'INFER %) (not= '⊢ %))
-                             raw-theorem)
-                           )))]
-       {:name name
-        :args (vec (map first forms))
-        :forms (vec forms)
-        :foreward (not (nil? (last (map first forms))))
-        :backward (not (nil? (last (butlast (map first forms)))))
-        }
-       )
+     ; theorem is proofed -> reform raw-theorem
+     (let [replacement-map (zipmap (distinct (filter #(not (contains? operators %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
+           forms (postwalk-replace
+                   replacement-map
+                   (vec (map
+                          vector
+                          (map #(read-string (str "$" %)) (range (count replacement-map) (+ (count replacement-map) (count raw-theorem))))
+                          (filter
+                            #(and (not= 'INFER %) (not= '⊢ %))
+                            raw-theorem)
+                          )))]
+      {:name name
+       :args (vec (map first forms))
+       :forms (vec forms)
+       :foreward (not (nil? (last (map first forms))))
+       :backward (not (nil? (last (butlast (map first forms)))))
+       }
+      )
       
-      ; not proofed theorem
-      (throw (IllegalArgumentException. "Theorem is not proofed now.")))))
+     ; not proofed theorem
+     (throw (IllegalArgumentException. "Theorem is not proofed now.")))))
 
 (defn- substitution
   "Substitutes a  predicate formula with a new variable.

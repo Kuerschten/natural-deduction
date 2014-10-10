@@ -7,20 +7,13 @@ rule args -> antecedent-steps (or-e #2)
 
 Beispielbeweise
 
-Wiederanwendbarkeit für Prädikatenlogik??? - wichtiger als GUI
-
 (apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
-
-evtl. keine GUI
-dafür Theoreme der Prädikatenlogik wiederverwenden
- * (all x (P(x)) => (all $x $P)
- * (all x (x or (not x))) => (all $x ($x or (not $x)))
- * Schlüsselwort einführen!? undefined(-predicate)
 
 Vorschläge GUI darstellung Beweis:
  - Baumstruktur
  - Wie Jape
  - Andere Oberflächen
+ - wenn zeitlich zu knapp keine GUI
 
 Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
 
