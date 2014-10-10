@@ -13,6 +13,9 @@ Wiederanwendbarkeit für Prädikatenlogik??? - wichtiger als GUI
 
 evtl. keine GUI
 dafür Theoreme der Prädikatenlogik wiederverwenden
+ * (all x (P(x)) => (all $x $P)
+ * (all x (x or (not x))) => (all $x ($x or (not $x)))
+ * Schlüsselwort einführen!? undefined(-predicate)
 
 Vorschläge GUI darstellung Beweis:
  - Baumstruktur

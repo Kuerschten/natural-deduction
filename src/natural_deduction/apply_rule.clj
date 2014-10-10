@@ -1,8 +1,21 @@
 (ns natural-deduction.core)
 
+(defn- predicate?
+  [elem operators]
+  (and
+    (coll? elem)
+    (symbol? (first elem))
+    (not (contains? (set operators) (first elem)))
+    (coll? (second elem))
+    (= 2 (count elem))))
+
 (defn reform-proofed-theorem
   [theorem operators]
-  (let [raw-theorem (:theorem theorem)
+  (let [;raw-theorem (:theorem theorem)
+        raw-theorem (prewalk #(if (predicate? % operators)
+                                (symbol (apply str (concat (list (first %) "_") (interpose "_" (second %)))))
+                                %)
+                             (:theorem theorem))
         proofed (:proof theorem)
         bodies (set (map :body (flatten proofed)))
         name (:name theorem)]
@@ -24,8 +37,8 @@
        {:name name
         :args (vec (map first forms))
         :forms (vec forms)
-        :foreward (last (map first forms))
-        :backward (last (butlast (map first forms)))
+        :foreward (not (nil? (last (map first forms))))
+        :backward (not (nil? (last (butlast (map first forms)))))
         }
        )
       

@@ -151,8 +151,8 @@
       new-proof)))
 
 (defn- unifiable?
-  [object]
-  (:unifiable? (meta object)))
+  [elem]
+  (:unifiable? (meta elem)))
 
 (defn unify
   [proof line old new]
