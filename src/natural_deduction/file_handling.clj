@@ -11,14 +11,14 @@
 
 (defn read-masterfile
   [file-path]
-  (let [masterfile (read-string (str "{" (slurp (path-conformer file-path)) "}"))
+  (let [masterfile (read-string (slurp (path-conformer file-path)))
         proofsystems (map
-                       #(read-string (str "{" (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))) "}"))
+                       #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
                        (:proofsystems masterfile))
         operators (set (conj (apply concat (map :operators proofsystems)) 'substitution '⊢ 'INFER))
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
         theorems (apply concat (map
-                                 #(read-string (str "(" (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))) ")"))
+                                 #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
                                  (:theorems masterfile)))]
     {:operators operators
      :rules rules

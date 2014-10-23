@@ -1,8 +1,8 @@
-:operators
-(∀ ∃ actual)
-
-:rules
-( ; ALL
+{:operators
+ (∀ ∃ actual)
+ 
+ :rules
+ (; ALL
   {:name "all-i"
 	 :args [$proof $all]
 	 :forms [[$proof ((actual $i) ⊢ (substitution $predicate $x $i))]
@@ -15,9 +15,8 @@
 	         [$actual (actual $t)]
 	         [$substitute (substitution $predicate $x $t)]]
 	 :foreward true}
-	
-	; EXISTS
-	{:name "exists-i"
+  ; EXISTS
+  {:name "exists-i"
 	 :args [$actual $substitute $exists]
 	 :forms [[$actual (actual $t)]
 	         [$substitute (substitution $predicate $x $t)]
@@ -28,4 +27,4 @@
 	 :args [$exists $proof $X]
 	 :forms [[$exists (∃ $x $predicate)]
 	         [$proof ((actual $x0) (substitution $predicate $x $x0) ⊢ $X)]]
-	 :backward true})
+	 :backward true})}

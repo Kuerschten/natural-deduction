@@ -16,11 +16,11 @@
                                 (symbol (str %))
                                 %)
                              (:theorem theorem))
-        proofed (:proof theorem)
-        bodies (set (map :body (flatten proofed)))
+        proof (:proof theorem)
+        bodies (set (map :body (flatten proof)))
         name (:name theorem)]
     (if (and
-         proofed
+         proof
          (not (contains? bodies :todo)))
       
      ; theorem is proofed -> reform raw-theorem

@@ -1,15 +1,15 @@
-:operators
-(∧ ∨ → ¬ ⊥)
+{:operators
+ (∧ ∨ → ¬ ⊥)
 
-:rules
-( ; SAME
+ :rules
+ (; SAME
 	{:name "same"
 	 :args [$a $b]
 	 :forms [[$a $b]]
 	 :foreward true
 	 :backward true}
 	
-	; AND
+  ; AND
 	{:name "and-e-left"
 	 :args [$and $a]
 	 :forms [[$and ($a ∧ $b)]]
@@ -31,7 +31,7 @@
            [$ab (multiple-introductions $a $b)]]
 	 :backward true}
 	
-	; OR
+  ; OR
 	{:name "or-e"
 	 :args [$or $proofs $X]
 	 :forms [[$or ($a ∨ $b)]
@@ -50,7 +50,7 @@
 	 :foreward true
 	 :backward true}
 	
-	; IMPL
+  ; IMPL
 	{:name "impl-e"
 	 :args [$a $impl $b]
 	 :forms [[$impl ($a → $b)]]
@@ -62,7 +62,7 @@
 	         [$impl ($a → $b)]]
 	 :backward true}
 	
-	; NOT
+  ; NOT
 	{:name "not-e"
 	 :args [$a $not $contradiction]
 	 :forms [[$not (¬ $a)]
@@ -76,7 +76,7 @@
 	         [$res (¬ $a)]]
 	 :backward true}
 	
-	; RAA, ⊥
+  ; RAA, ⊥
 	{:name "efq"
 	 :args [$contradiction $a]
 	 :forms [[$contradiction ⊥]]
@@ -86,4 +86,4 @@
 	{:name "raa"
 	 :args [$proof $a]
 	 :forms [[$proof ((¬ $a) ⊢ ⊥)]]
-	 :backward true})
+	 :backward true})}
