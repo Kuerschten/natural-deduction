@@ -26,6 +26,8 @@ Theorem ist schon bewiesen - noch zu beweisen sind Hypotesen bzw. Probleme (assu
 
 :args -> :precedence und :consequence
 
+Filehandling: master-file unterscheidet zw theorem und hypothese, angabe eines theorem-files
+
 =====
 
 Beweissystem:
