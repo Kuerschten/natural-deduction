@@ -1,5 +1,5 @@
 #{{:name "16.d"
-   :theorem [INFER (P ∨ (¬ P))]
+   :hypothesis [INFER (P ∨ (¬ P))]
    :proof [[{:body (¬ (P ∨ (¬ P))), :hash 3, :rule :assumption}
             [{:body P, :hash 8, :rule :assumption}
              {:body (P ∨ (¬ P)), :hash 12, :rule ("or-i1" 8)}

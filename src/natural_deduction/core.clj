@@ -70,10 +70,10 @@ stop
                   1 3 4))
 
 ; proofs
-(def master-file (read-proofed-theorems "resources/systemfiles/LfM_proofed_theorems.clj" (read-masterfile "resources/systemfiles/LfM.clj")))
+(def master-file (read-theorems "resources/systemfiles/LfM_proofed_theorems.clj" (read-masterfile "resources/systemfiles/LfM.clj")))
 (def rules (:rules master-file))
-(def theorems (:theorems master-file))
-(def operators (:operators master-file))
+(def hypotheses (:hypotheses master-file))
+(def fix-elements (:fix-elements master-file))
 
 ; propositional calculus
 
@@ -126,7 +126,7 @@ stop
 ; 16.f
 (pretty-printer
   (-> (build-proof '[(P → Q) ((¬ P) → Q) INFER Q])
-    (proof-step-foreward (reform-proofed-theorem (get-theorem theorems "16.d") operators) 3)
+    (proof-step-foreward (reform-theorem (get-hypothesis hypotheses "16.d") fix-elements) 3)
     (unify 3 'new6 'P)
     (proof-step-backward (get-rule rules "or-e") 3 4 5)
     (proof-step-foreward (get-rule rules "impl-e") 1 4 5)

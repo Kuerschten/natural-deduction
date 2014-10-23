@@ -1,4 +1,4 @@
-{:operators
+{:fix-elements
  (∀ ∃ actual)
  
  :rules

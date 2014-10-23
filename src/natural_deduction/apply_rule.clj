@@ -1,21 +1,20 @@
 (ns natural-deduction.core)
 
 (defn- predicate?
-  [elem operators]
+  [elem fix-elements]
   (and
     (coll? elem)
     (symbol? (first elem))
-    (not (contains? (set operators) (first elem)))
+    (not (contains? (set fix-elements) (first elem)))
     (coll? (second elem))
     (= 2 (count elem))))
 
-(defn reform-proofed-theorem
-  [theorem operators]
-  (let [;raw-theorem (:theorem theorem)
-        raw-theorem (prewalk #(if (predicate? % operators)
+(defn reform-theorem
+  [theorem fix-elements]
+  (let [raw-theorem (prewalk #(if (predicate? % fix-elements)
                                 (symbol (str %))
                                 %)
-                             (:theorem theorem))
+                             (:hypothesis theorem))
         proof (:proof theorem)
         bodies (set (map :body (flatten proof)))
         name (:name theorem)]
@@ -24,7 +23,7 @@
          (not (contains? bodies :todo)))
       
      ; theorem is proofed -> reform raw-theorem
-     (let [replacement-map (zipmap (distinct (filter #(not (contains? operators %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
+     (let [replacement-map (zipmap (distinct (filter #(not (contains? fix-elements %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
            forms (postwalk-replace
                    replacement-map
                    (vec (map

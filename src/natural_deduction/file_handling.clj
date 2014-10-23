@@ -15,23 +15,23 @@
         proofsystems (map
                        #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
                        (:proofsystems masterfile))
-        operators (set (conj (apply concat (map :operators proofsystems)) 'substitution '⊢ 'INFER))
+        fix-elements (set (conj (apply concat (map :fix-elements proofsystems)) 'substitution '⊢ 'INFER))
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
-        theorems (apply concat (map
+        hypotheses (apply concat (map
                                  #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
-                                 (:theorems masterfile)))]
-    {:operators operators
+                                 (:hypotheses masterfile)))]
+    {:fix-elements fix-elements
      :rules rules
-     :theorems theorems}))
+     :hypotheses hypotheses}))
 
-(defn read-proofed-theorems
+(defn read-theorems
   [file-path master-file-hash-map]
   (let [proofed-theorems (apply list (read-string (slurp (path-conformer file-path))))
         replace-map (zipmap (map #(dissoc % :proof) proofed-theorems) proofed-theorems)
-        new-theorems (postwalk-replace replace-map (:theorems master-file-hash-map))]
-    (assoc master-file-hash-map :theorems new-theorems)))
+        new-theorems (postwalk-replace replace-map (:hypotheses master-file-hash-map))]
+    (assoc master-file-hash-map :hypotheses new-theorems)))
 
-(defn save-proofed-theorems
+(defn save-theorems
   [file-path theorems]
   (let [proofed-theorems-str (with-out-str (pp/pprint (filter :proof theorems)))]
     (spit (path-conformer file-path) proofed-theorems-str)))

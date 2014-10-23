@@ -42,11 +42,11 @@
    An proof obligation gets the body :todo
 
    E.g. [a ⊢ b] => [{:body a, :hash 1, :rule :premise} {:body :todo, :hash 2, :rule nil} {:body b, :hash 3, :rule nil}]"
-  [theorem]
-  {:pre [(vector? theorem)]}
+  [hypothesis]
+  {:pre [(vector? hypothesis)]}
   (do
     (reset! counter 0)
-    (build-subproof theorem :premise)))
+    (build-subproof hypothesis :premise)))
 
 (defn- hash2line
   [proof hash]
@@ -106,16 +106,16 @@
   [rules rule-name]
   (first (get-rules rules rule-name)))
 
-(defn get-theorem
-  [theorems theorem-name]
-  (first (clojure.set/select #(= (:name %) theorem-name) (set theorems))))
+(defn get-hypothesis
+  [hypotheses hypothesis-name]
+  (first (clojure.set/select #(= (:name %) hypothesis-name) (set hypotheses))))
 
-(defn add-proof-to-theorem
-  [theorems theorem-name proof]
-  (let [theorem (get-theorem theorems theorem-name)]
+(defn add-proof-to-hypothesis ;TODO
+  [hypotheses hypothesis-name proof]
+  (let [hypothesis (get-hypothesis hypotheses hypothesis-name)]
     (postwalk-replace
-      {theorem (assoc theorem :proof proof)}
-      theorems)))  
+      {hypothesis (assoc hypothesis :proof proof)}
+      hypotheses)))  
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
