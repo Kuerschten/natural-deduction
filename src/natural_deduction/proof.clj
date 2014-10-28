@@ -114,12 +114,14 @@
   [theorems theorem-name]
   (select-element theorems theorem-name))
 
-(defn hypothesis2theorem ;TODO
-  [hypotheses hypothesis-name proof]
-  (let [hypothesis (get-hypothesis hypotheses hypothesis-name)]
-    (postwalk-replace
-      {hypothesis (assoc hypothesis :proof proof)}
-      hypotheses)))  
+(defn hypothesis2theorem
+  "Returns a new master-file-hash-map with new integrated theorem.
+   Hypotheses are untouched."
+  [master-file-hash-map hypothesis-name proof]
+  (let [hypothesis (get-hypothesis (:hypotheses master-file-hash-map) hypothesis-name)
+        new-theorem (assoc hypothesis :proof proof)
+        theorems (:theorems master-file-hash-map)]
+    (assoc master-file-hash-map :theorems (conj theorems new-theorem))))
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
