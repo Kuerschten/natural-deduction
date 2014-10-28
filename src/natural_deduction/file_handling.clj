@@ -19,10 +19,12 @@
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
         hypotheses (apply concat (map
                                  #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
-                                 (:hypotheses masterfile)))]
+                                 (:hypotheses masterfile)))
+        theorems (read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) (:theorems masterfile)))))))]
     {:fix-elements fix-elements
      :rules rules
-     :hypotheses hypotheses}))
+     :hypotheses hypotheses
+     :theorems theorems}))
 
 (defn read-theorems
   [file-path master-file-hash-map]

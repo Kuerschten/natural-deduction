@@ -33,13 +33,17 @@ Filehandling: master-file unterscheidet zw theorem und hypothese, angabe eines t
 Beweissystem:
  * Regeln
  * Operatoren
- (* Vatersystem)
+
+Hypothese:
+ * Name
+ * Hypothese
 
 Theorem:
  * Name
- * Theorem
- * Beweis (ausgelagert in zu speichernder Datei)
+ * Hypothese
+ * Beweis
 
 Zu ladenes File (eine Datei)
  * Beweissystem
- * Liste aller Theroeme
+ * Hypothesen
+ * Theroeme

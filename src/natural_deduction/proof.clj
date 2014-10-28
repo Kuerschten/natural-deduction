@@ -110,7 +110,7 @@
   [hypotheses hypothesis-name]
   (first (clojure.set/select #(= (:name %) hypothesis-name) (set hypotheses))))
 
-(defn add-proof-to-hypothesis ;TODO
+(defn hypothesis2theorem ;TODO
   [hypotheses hypothesis-name proof]
   (let [hypothesis (get-hypothesis hypotheses hypothesis-name)]
     (postwalk-replace

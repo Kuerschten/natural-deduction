@@ -70,7 +70,7 @@ stop
                   1 3 4))
 
 ; proofs
-(def master-file (read-theorems "resources/systemfiles/LfM_proofed_theorems.clj" (read-masterfile "resources/systemfiles/LfM.clj")))
+(def master-file (read-masterfile "resources/systemfiles/LfM.clj"))
 (def rules (:rules master-file))
 (def hypotheses (:hypotheses master-file))
 (def fix-elements (:fix-elements master-file))
