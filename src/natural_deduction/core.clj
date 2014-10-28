@@ -73,6 +73,7 @@ stop
 (def master-file (read-masterfile "resources/systemfiles/LfM.clj"))
 (def rules (:rules master-file))
 (def hypotheses (:hypotheses master-file))
+(def theorems (:theorems master-file))
 (def fix-elements (:fix-elements master-file))
 
 ; propositional calculus
@@ -101,7 +102,7 @@ stop
     (proof-step-foreward (get-rule rules "not-e") 2 4 5)
     ))
 
-; 16.d
+; 16.d (TND)
 (pretty-printer
   (-> (build-proof '[INFER (P ∨ (¬ P))])
     (proof-step-backward (get-rule rules "raa") 1 2)

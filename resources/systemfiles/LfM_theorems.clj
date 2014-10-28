@@ -1,4 +1,4 @@
-#{{:name "16.d"
+#{{:name "TND"
    :hypothesis [INFER (P ∨ (¬ P))]
    :proof [[{:body (¬ (P ∨ (¬ P))), :hash 3, :rule :assumption}
             [{:body P, :hash 8, :rule :assumption}

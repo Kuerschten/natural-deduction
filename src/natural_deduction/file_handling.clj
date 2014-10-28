@@ -28,10 +28,10 @@
 
 (defn read-theorems
   [file-path master-file-hash-map]
-  (let [proofed-theorems (apply list (read-string (slurp (path-conformer file-path))))
-        replace-map (zipmap (map #(dissoc % :proof) proofed-theorems) proofed-theorems)
-        new-theorems (postwalk-replace replace-map (:hypotheses master-file-hash-map))]
-    (assoc master-file-hash-map :hypotheses new-theorems)))
+  (let [new-theorems (read-string (slurp (path-conformer file-path)))
+        old-theorems (:theorems master-file-hash-map)
+        theorems (clojure.set/union new-theorems old-theorems)]
+    (assoc master-file-hash-map :theorems theorems)))
 
 (defn save-theorems
   [file-path theorems]
