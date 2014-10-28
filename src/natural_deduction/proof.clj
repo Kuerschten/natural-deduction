@@ -116,7 +116,7 @@
 
 (defn hypothesis2theorem
   "Returns a new master-file-hash-map with new integrated theorem.
-   Hypotheses are untouched."
+   Hypotheses remain untouched."
   [master-file-hash-map hypothesis-name proof]
   (let [hypothesis (get-hypothesis (:hypotheses master-file-hash-map) hypothesis-name)
         new-theorem (assoc hypothesis :proof proof)

@@ -20,11 +20,15 @@
         hypotheses (apply concat (map
                                  #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
                                  (:hypotheses masterfile)))
-        theorems (read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) (:theorems masterfile)))))))]
+        theorems-file (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) (:theorems masterfile)))))
+        theorems (try
+                   (read-string (slurp theorems-file))
+                   (catch Exception e (if (= java.io.FileNotFoundException (class e)) nil e)))]
     {:fix-elements fix-elements
      :rules rules
      :hypotheses hypotheses
-     :theorems theorems}))
+     :theorems theorems
+     :theorems-file theorems-file}))
 
 (defn read-theorems
   [file-path master-file-hash-map]
@@ -34,6 +38,12 @@
     (assoc master-file-hash-map :theorems theorems)))
 
 (defn save-theorems
-  [file-path theorems]
-  (let [proofed-theorems-str (with-out-str (pp/pprint (filter :proof theorems)))]
-    (spit (path-conformer file-path) proofed-theorems-str)))
+  ([master-file-hash-map]
+   (let [file (:theorems-file master-file-hash-map)]
+     (if file
+       (save-theorems file master-file-hash-map)
+       (throw (NoSuchFieldException. "No theorem file in master file.")))))
+  
+  ([file-path master-file-hash-map]
+   (let [theorems (:theorems master-file-hash-map)]
+     (spit (path-conformer file-path) theorems))))
