@@ -98,17 +98,21 @@
 	          (dotimes [_ lvl] (print "| "))
 	          (println (build-pretty-string elem complete-proof))))))))
 
-(defn get-rules
-  [rules rule-name]
-  (clojure.set/select #(= (:name %) rule-name) (set rules)))
+(defn- select-element
+  [elements element-name]
+  (first (clojure.set/select #(= (:name %) element-name) (set elements))))
 
 (defn get-rule
   [rules rule-name]
-  (first (get-rules rules rule-name)))
+  (select-element rules rule-name))
 
 (defn get-hypothesis
   [hypotheses hypothesis-name]
-  (first (clojure.set/select #(= (:name %) hypothesis-name) (set hypotheses))))
+  (select-element hypotheses hypothesis-name))
+
+(defn get-theorem
+  [theorems theorem-name]
+  (select-element theorems theorem-name))
 
 (defn hypothesis2theorem ;TODO
   [hypotheses hypothesis-name proof]

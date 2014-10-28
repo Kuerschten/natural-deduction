@@ -127,7 +127,7 @@ stop
 ; 16.f
 (pretty-printer
   (-> (build-proof '[(P → Q) ((¬ P) → Q) INFER Q])
-    (proof-step-foreward (reform-theorem (get-hypothesis hypotheses "16.d") fix-elements) 3)
+    (proof-step-foreward (reform-theorem (get-theorem theorems "TND") fix-elements) 3)
     (unify 3 'new6 'P)
     (proof-step-backward (get-rule rules "or-e") 3 4 5)
     (proof-step-foreward (get-rule rules "impl-e") 1 4 5)
