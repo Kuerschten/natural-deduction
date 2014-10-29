@@ -206,7 +206,8 @@
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
       
       :else ;; Build next proof
-    (let [rules (map #(if  (:backward %) (assoc % :backward (last (butlast (:args %)))) %)
+    (let [rule (assoc rule :args (conj (vec (:precedence rule)) (:consequence rule)))
+          rules (map #(if  (:backward %) (assoc % :backward (last (butlast (:args %)))) %)
                      (map #(if (:foreward %) (assoc % :foreward (last (:args %))) %)
                        (let [args (:args rule)]
                                  (map #(assoc rule :args (conj (vec %) (last args)))

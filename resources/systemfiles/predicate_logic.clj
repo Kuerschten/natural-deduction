@@ -4,27 +4,31 @@
  :rules
  (; ALL
   {:name "all-i"
-	 :args [$proof $all]
+	 :precedence [$proof]
+	 :consequence $all
 	 :forms [[$proof ((actual $i) ⊢ (substitution $predicate $x $i))]
 	         [$all (∀ $x $predicate)]]
 	 :backward true}
 	
 	{:name "all-e"
-	 :args [$all $actual $substitute]
+	 :precedence [$all $actual]
+	 :consequence $substitute
 	 :forms [[$all (∀ $x $predicate)]
 	         [$actual (actual $t)]
 	         [$substitute (substitution $predicate $x $t)]]
 	 :foreward true}
   ; EXISTS
   {:name "exists-i"
-	 :args [$actual $substitute $exists]
+	 :precedence [$actual $substitute]
+	 :consequence $exists
 	 :forms [[$actual (actual $t)]
 	         [$substitute (substitution $predicate $x $t)]
 	         [$exists (∃ $x $predicate)]]
 	 :backward true}
 	
 	{:name "exists-e"
-	 :args [$exists $proof $X]
+	 :precedence [$exists $proof]
+	 :consequence $X
 	 :forms [[$exists (∃ $x $predicate)]
 	         [$proof ((actual $x0) (substitution $predicate $x $x0) ⊢ $X)]]
 	 :backward true})}
