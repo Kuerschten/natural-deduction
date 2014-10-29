@@ -9,7 +9,7 @@
     (coll? (second elem))
     (= 2 (count elem))))
 
-(defn reform-theorem
+(defn theorem2rule
   [theorem fix-elements]
   (let [raw-theorem (prewalk #(if (predicate? % fix-elements)
                                 (symbol (str %))
