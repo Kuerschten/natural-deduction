@@ -32,9 +32,11 @@
                           (filter
                             #(and (not= 'INFER %) (not= '⊢ %))
                             raw-theorem)
-                          )))]
+                          )))
+           args (map first forms)]
       {:name name
-       :args (vec (map first forms))
+       :precedence (vec (butlast args))
+       :consequence (last args)
        :forms (vec forms)
        :foreward (not (nil? (last (map first forms))))
        :backward (not (nil? (last (butlast (map first forms)))))
