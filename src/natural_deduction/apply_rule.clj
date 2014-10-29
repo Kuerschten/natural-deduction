@@ -10,8 +10,10 @@
     (= 2 (count elem))))
 
 (defn theorem2rule
-  [theorem fix-elements]
-  (let [raw-theorem (prewalk #(if (predicate? % fix-elements)
+  [master-file-hash-map theorem-name]
+  (let [theorem (get-theorem master-file-hash-map theorem-name)
+        fix-elements (:fix-elements master-file-hash-map)
+        raw-theorem (prewalk #(if (predicate? % fix-elements)
                                 (symbol (str %))
                                 %)
                              (:hypothesis theorem))

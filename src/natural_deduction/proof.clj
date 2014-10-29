@@ -103,16 +103,16 @@
   (first (clojure.set/select #(= (:name %) element-name) (set elements))))
 
 (defn get-rule
-  [rules rule-name]
-  (select-element rules rule-name))
+  [master-file-hash-map rule-name]
+  (select-element (:rules master-file-hash-map) rule-name))
 
 (defn get-hypothesis
-  [hypotheses hypothesis-name]
-  (select-element hypotheses hypothesis-name))
+  [master-file-hash-map hypothesis-name]
+  (select-element (:hypotheses master-file-hash-map) hypothesis-name))
 
 (defn get-theorem
-  [theorems theorem-name]
-  (select-element theorems theorem-name))
+  [master-file-hash-map theorem-name]
+  (select-element (:theorems master-file-hash-map) theorem-name))
 
 (defn hypothesis2theorem
   "Returns a new master-file-hash-map with new integrated theorem.
@@ -125,13 +125,15 @@
 
 (defn show-all-foreward-rules
   "Prints all loaded rules that runs foreward."
-  [rules]
-  (pp/print-table (map #(hash-map 'name (:name %) 'arguments (:args %) 'result (:foreward %)) (filter :foreward rules))))
+  [master-file-hash-map]
+  (let [rules (:rules master-file-hash-map)]
+    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :foreward rules)))))
 
 (defn show-all-backward-rules
   "Prints all loaded rules that runs backward."
-  [rules]
-  (pp/print-table (map #(hash-map 'name (:name %) 'arguments (:args %) 'result (:backward %)) (filter :backward rules))))
+  [master-file-hash-map]
+  (let [rules (:rules master-file-hash-map)]
+    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :backward rules)))))
 
 (defn- update-proof
   [proof new-step]

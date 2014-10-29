@@ -9,18 +9,18 @@
   [file-path]
   (read-string (str "(" (slurp (path-conformer file-path)) ")")))
 
-(defn read-masterfile
+(defn read-master-file
   [file-path]
-  (let [masterfile (read-string (slurp (path-conformer file-path)))
+  (let [master-file (read-string (slurp (path-conformer file-path)))
         proofsystems (map
                        #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
-                       (:proofsystems masterfile))
+                       (:proofsystems master-file))
         fix-elements (set (conj (apply concat (map :fix-elements proofsystems)) 'substitution '⊢ 'INFER))
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
         hypotheses (apply concat (map
                                  #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
-                                 (:hypotheses masterfile)))
-        theorems-file (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) (:theorems masterfile)))))
+                                 (:hypotheses master-file)))
+        theorems-file (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) (:theorems master-file)))))
         theorems (try
                    (read-string (slurp theorems-file))
                    (catch Exception e (if (= java.io.FileNotFoundException (class e)) nil e)))]
