@@ -16,7 +16,7 @@
 	 :forms [[$all (∀ $x $predicate)]
 	         [$actual (actual $t)]
 	         [$substitute (substitution $predicate $x $t)]]
-	 :foreward true}
+	 :forward true}
   ; EXISTS
   {:name "exists-i"
 	 :precedence [$actual $substitute]
