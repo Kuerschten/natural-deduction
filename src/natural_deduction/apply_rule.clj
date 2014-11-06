@@ -40,7 +40,7 @@
        :precedence (vec (butlast args))
        :consequence (last args)
        :forms (vec forms)
-       :foreward (not (nil? (last (map first forms))))
+       :forward (not (nil? (last (map first forms))))
        :backward (not (nil? (last (butlast (map first forms)))))
        }
       )
@@ -83,11 +83,11 @@
 
 (defn- apply-rule-1step
   "Use an unrewrited(!) rule on terms.
-   The rule can be used foreward or backward (flag foreward?).
+   The rule can be used forward or backward (flag forward?).
    Terms is a collection of all terms.
    Return the result of the therms while using the rule."
-  [foreward? rule terms]
- (let [movement (if foreward? (:foreward rule) (:backward rule))]
+  [forward? rule terms]
+ (let [movement (if forward? (:forward rule) (:backward rule))]
    (when (and
            movement
            (= (inc (count terms)) (count (:args rule))))
@@ -104,9 +104,9 @@
              x))
          res)))))
 
-(defn apply-rule-foreward
+(defn apply-rule-forward
   "Use an unrewrited(!) rule on terms.
-   Return the result of the therms while using the rule foreward."
+   Return the result of the therms while using the rule forward."
   [rule & terms]
   (apply-rule-1step true rule terms))
 

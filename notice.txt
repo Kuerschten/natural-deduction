@@ -30,6 +30,8 @@ Filehandling: master-file unterscheidet zw theorem und hypothese, angabe eines t
 
 Auslagern der manuellen Tests
 
+foreward -> forward
+
 =====
 
 Beweissystem:

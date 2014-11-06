@@ -123,11 +123,11 @@
         theorems (:theorems master-file-hash-map)]
     (assoc master-file-hash-map :theorems (conj theorems new-theorem))))
 
-(defn show-all-foreward-rules
-  "Prints all loaded rules that runs foreward."
+(defn show-all-forward-rules
+  "Prints all loaded rules that runs forward."
   [master-file-hash-map]
   (let [rules (:rules master-file-hash-map)]
-    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :foreward rules)))))
+    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :forward rules)))))
 
 (defn show-all-backward-rules
   "Prints all loaded rules that runs backward."
@@ -187,7 +187,7 @@
     (update-proof proof new-step)))
 
 (defn- proof-step
-  [proof rule foreward? lines]
+  [proof rule forward? lines]
   (let [hashes (map #(line2hash proof %) lines)
         elems (flatten (filter
                          (fn [x] (some
@@ -210,11 +210,11 @@
       :else ;; Build next proof
     (let [rule (assoc rule :args (conj (vec (:precedence rule)) (:consequence rule)))
           rules (map #(if  (:backward %) (assoc % :backward (last (butlast (:args %)))) %)
-                     (map #(if (:foreward %) (assoc % :foreward (last (:args %))) %)
+                     (map #(if (:forward %) (assoc % :forward (last (:args %))) %)
                        (let [args (:args rule)]
                                  (map #(assoc rule :args (conj (vec %) (last args)))
                                       (combo/permutations (butlast args))))))
-          res (filter #(not= nil %) (map #(apply-rule-1step foreward? % args) rules))
+          res (filter #(not= nil %) (map #(apply-rule-1step forward? % args) rules))
           news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
           nres (if (coll? res) (list* (when res (prewalk-replace (zipmap news (map (fn [_] (with-meta (symbol (str "new" (new-number))) {:unifiable? true})) news)) res))) res)
           new-res (if (> (count nres) 1)
@@ -225,7 +225,7 @@
             todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
       (when new-res (cond
            (= todo (last elems))
-           ; foreward
+           ; forward
            (let [b  {:body new-res
                               :hash nil
                               :rule (cons (:name rule) (butlast hashes))}]
@@ -306,7 +306,7 @@
                        {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before (list todo b) todo-siblings-after)))}
                        proof))))))))))))
 
-(defn proof-step-foreward
+(defn proof-step-forward
   [proof rule & lines]
   (proof-step proof rule true lines))
 

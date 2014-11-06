@@ -7,7 +7,7 @@
 	 :precedence [$a]
 	 :consequence $b
 	 :forms [[$a $b]]
-	 :foreward true
+	 :forward true
 	 :backward true}
 	
   ; AND
@@ -15,19 +15,19 @@
 	 :precedence [$and]
 	 :consequence $a
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward true}
+	 :forward true}
 	
 	{:name "and-e-right"
 	 :precedence [$and]
 	 :consequence $b
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward true}
+	 :forward true}
 	
 	{:name "and-i"
 	 :precedence [$a $b]
 	 :consequence $and
 	 :forms [[$and ($a ∧ $b)]]
-	 :foreward true}
+	 :forward true}
 	
 	{:name "and-i-backward"
 	 :precedence [$ab]
@@ -48,14 +48,14 @@
 	 :precedence [$a]
 	 :consequence $or
 	 :forms [[$or ($a ∨ $b)]]
-	 :foreward true
+	 :forward true
 	 :backward true}
 	
 	{:name "or-i-right"
 	 :precedence [$b]
 	 :consequence $or
 	 :forms [[$or ($a ∨ $b)]]
-	 :foreward true
+	 :forward true
 	 :backward true}
 	
   ; IMPL
@@ -63,7 +63,7 @@
 	 :precedence [$a $impl]
 	 :consequence $b
 	 :forms [[$impl ($a → $b)]]
-	 :foreward true}
+	 :forward true}
 	
 	{:name "impl-i"
 	 :precedence [$proof]
@@ -78,7 +78,7 @@
 	 :consequence $contradiction
 	 :forms [[$not (¬ $a)]
 	         [$contradiction ⊥]]
-	 :foreward true
+	 :forward true
 	 :backward true}
 	
 	{:name "not-i"
@@ -93,7 +93,7 @@
 	 :precedence [$contradiction]
 	 :consequence $a
 	 :forms [[$contradiction ⊥]]
-	 :foreward true
+	 :forward true
 	 :backward true}
 	
 	{:name "raa"
