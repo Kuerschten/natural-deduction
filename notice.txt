@@ -20,18 +20,6 @@ Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
 Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction for LTL
  - i:<>A INFER i<=j j:A (<>-elim)
 
-Theorem ist schon bewiesen - noch zu beweisen sind Hypotesen bzw. Probleme (assumpsions, hypotheses, problems)
-
-:operators -> :fix-elements
-
-:args -> :precedence und :consequence
-
-Filehandling: master-file unterscheidet zw theorem und hypothese, angabe eines theorem-files
-
-Auslagern der manuellen Tests
-
-foreward -> forward
-
 =====
 
 Beweissystem:

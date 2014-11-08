@@ -1,11 +1,11 @@
 (ns manual-tests.natural-deduction
   (:require [natural-deduction.core :refer :all]))
 
-stop
-
 ;; single tests
 
 (def master-file (read-master-file "resources/systemfiles/LfM.clj"))
+
+stop
 
 ; foreward
 (pretty-printer

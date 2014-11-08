@@ -108,7 +108,7 @@
 
 (defn get-hypothesis
   [master-file-hash-map hypothesis-name]
-  (select-element (:hypotheses master-file-hash-map) hypothesis-name))
+  (:hypothesis (select-element (:hypotheses master-file-hash-map) hypothesis-name)))
 
 (defn get-theorem
   [master-file-hash-map theorem-name]
@@ -118,8 +118,10 @@
   "Returns a new master-file-hash-map with new integrated theorem.
    Hypotheses remain untouched."
   [master-file-hash-map hypothesis-name proof]
-  (let [hypothesis (get-hypothesis (:hypotheses master-file-hash-map) hypothesis-name)
-        new-theorem (assoc hypothesis :proof proof)
+  (let [hypothesis (get-hypothesis master-file-hash-map hypothesis-name)
+        new-theorem {:name hypothesis-name
+                     :hypothesis hypothesis
+                     :proof proof}
         theorems (:theorems master-file-hash-map)]
     (assoc master-file-hash-map :theorems (conj theorems new-theorem))))
 

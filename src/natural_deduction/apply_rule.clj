@@ -52,10 +52,10 @@
   "Substitutes a  predicate formula with a new variable.
 
    E. g. (substitution '(P(x)) 'x 'i) => (P(i))"
-  [predicate-formula old-var new-var]
-  (if (contains? (set (flatten predicate-formula)) new-var) ; TODO attention!!! f(x)-example
-    (throw (IllegalArgumentException. (str "The variable \"" new-var "\" that shall be inserted already exists in \"" predicate-formula"\".")))
-    (clojure.walk/prewalk-replace {old-var new-var} predicate-formula)))
+  [predicate-formula old new]
+  (if (contains? (set (flatten predicate-formula)) new) ; TODO attention!!! f(x)-example
+    (throw (IllegalArgumentException. (str "The variable \"" new "\" that shall be inserted already exists in \"" predicate-formula"\".")))
+    (clojure.walk/prewalk-replace {old new} predicate-formula)))
 
 (defn- rewrite
   "Rewrite a rule form. (It is needed to use apply-rule-rewrite)
