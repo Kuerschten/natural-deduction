@@ -20,6 +20,8 @@ Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
 Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction for LTL
  - i:<>A INFER i<=j j:A (<>-elim)
 
+apply-rule-1step umbenennen? wie?
+
 =====
 
 Beweissystem:

@@ -67,11 +67,11 @@
       (coll? form) (if quoted? (list 'list (list 'seq (concat '(concat) rewrited-form))) (list 'seq (concat '(concat) (map #(rewrite % true) form))))
       :else (if quoted? (list 'list (list 'quote form)) (list 'quote form)))))
 
-(defn- apply-rule-rewrite
+(defn- apply-rule-rewrite ; TODO - auf neue Regeldefinition umbauen
   "Rewrite an unrewrited(!) rule form to function that uses core.logic.
    Returns a String."
   [rule]
-  (let [args (:args rule)
+  (let [args (conj (:precedence rule) (:consequence rule))
         forms (:forms rule)
         vars (vec (set (filter
                          #(and
@@ -81,26 +81,27 @@
         equals (map #(list 'clojure.core.logic/== (rewrite (first %) false) (rewrite (second %) false)) forms)]
     (list 'fn args (concat (list 'clojure.core.logic/fresh) (list vars) equals))))
 
-(defn- apply-rule-1step
+(defn- apply-rule-1step ; TODO - auf neue Regeldefinition umbauen
   "Use an unrewrited(!) rule on terms.
    The rule can be used forward or backward (flag forward?).
    Terms is a collection of all terms.
    Return the result of the therms while using the rule."
   [forward? rule terms]
- (let [movement (if forward? (:forward rule) (:backward rule))]
+ (let [movement (if forward? (:consequence rule) (last (:precedence rule)))
+       args (conj (:precedence rule) (:consequence rule))]
    (when (and
            movement
-           (= (inc (count terms)) (count (:args rule))))
+           (= (inc (count terms)) (count args)))
      (let [r (apply-rule-rewrite rule)
-           h1 (replace {movement 'q} (:args rule))
-           args (replace (zipmap (filter #(not= 'q %) h1) (map #(list 'quote %) terms)) h1)
-           function (list 'clojure.core.logic/run 1 '[q] (concat (list r) args))
+           h1 (replace {movement 'q} args)
+           new-terms (replace (zipmap (filter #(not= 'q %) h1) (map #(list 'quote %) terms)) h1)
+           function (list 'clojure.core.logic/run 1 '[q] (concat (list r) new-terms))
            res (first (eval function))]
        (postwalk
          (fn [x]
            (if (and (coll? x) (= (first x) 'substitution))
-             (let [[_ predicate-formula old-var new-var] x]
-               (substitution predicate-formula old-var new-var))
+             (let [[_ predicate-formula old new] x]
+               (substitution predicate-formula old new))
              x))
          res)))))
 

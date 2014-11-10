@@ -210,100 +210,97 @@
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
       
       :else ;; Build next proof
-    (let [rule (assoc rule :args (conj (vec (:precedence rule)) (:consequence rule)))
-          rules (map #(if  (:backward %) (assoc % :backward (last (butlast (:args %)))) %)
-                     (map #(if (:forward %) (assoc % :forward (last (:args %))) %)
-                       (let [args (:args rule)]
-                                 (map #(assoc rule :args (conj (vec %) (last args)))
-                                      (combo/permutations (butlast args))))))
+    (let [rules (let [precedence (:precedence rule)]
+                  (map #(assoc rule :precedence (vec %))
+                       (combo/permutations precedence)))
           res (filter #(not= nil %) (map #(apply-rule-1step forward? % args) rules))
           news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
           nres (if (coll? res) (list* (when res (prewalk-replace (zipmap news (map (fn [_] (with-meta (symbol (str "new" (new-number))) {:unifiable? true})) news)) res))) res)
           new-res (if (> (count nres) 1)
                     (apply hash-map (mapcat #(list (inc %1) %2) (range) nres))
                     (first nres))
-            todo-siblings (inner-proof todo proof)
-            todo-siblings-before (subvec todo-siblings 0 (.indexOf todo-siblings todo))
-            todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
+          todo-siblings (inner-proof todo proof)
+          todo-siblings-before (subvec todo-siblings 0 (.indexOf todo-siblings todo))
+          todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
       (when new-res (cond
-           (= todo (last elems))
-           ; forward
-           (let [b  {:body new-res
+          (= todo (last elems))
+          ; forward
+          (let [b  {:body new-res
                               :hash nil
                               :rule (cons (:name rule) (butlast hashes))}]
                       (if (= new-res (:body (first todo-siblings-after)))
                         ; a ... b -> a b ((interim) solution)
-              (postwalk-replace
+             (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc (first todo-siblings-after) :rule (:rule b))) (next todo-siblings-after)))}
                           proof)
               
                         ; a ... -> a b ...
-              (postwalk-replace
+             (postwalk-replace
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))}
                           proof)))
                     
            :else
-           ;backward
-           (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set new-res) 'INFER)))
+          ;backward
+          (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set new-res) 'INFER)))
              ; ... a -> b a (sub-proof)
-             (let [b (build-subproof (vec new-res))
+            (let [b (build-subproof (vec new-res))
                    a (assoc (first todo-siblings-after) :rule (cons (:name rule) (concat
-                                                                                   (butlast (butlast hashes))
-                                                                                   (list (list 'between (:hash (first b)) (:hash (last b)))))))]
+                                                                                  (butlast (butlast hashes))
+                                                                                  (list (list 'between (:hash (first b)) (:hash (last b)))))))]
                (postwalk-replace
                  {todo b,
                   (first todo-siblings-after) a}
                  proof))
              
              ; other backward
-             (let [old-a (last elems)]
+            (let [old-a (last elems)]
                (if (and (seq? new-res) (= (first new-res) 'multiple-introductions))
                  ; multiple introduction
-                 (let [build-multi (fn [elem]
-                                     (if (and
-                                           (coll? elem)
-                                           (or
-                                             (contains? (set elem) 'INFER)
-                                             (contains? (set elem) '⊢)))
-                                       (list (build-subproof (vec elem)))
-                                       (list
-                                         (hash-map
-                                           :body :todo
-                                           :hash (new-number)
-                                           :rule nil)
-                                         (hash-map
-                                           :body elem
-                                           :hash (new-number)
-                                           :rule nil))))
-                       multi-b (doall (apply concat (map build-multi (rest new-res))))
+                (let [build-multi (fn [elem]
+                                    (if (and
+                                          (coll? elem)
+                                          (or
+                                            (contains? (set elem) 'INFER)
+                                            (contains? (set elem) '⊢)))
+                                      (list (build-subproof (vec elem)))
+                                      (list
+                                        (hash-map
+                                          :body :todo
+                                          :hash (new-number)
+                                          :rule nil)
+                                        (hash-map
+                                          :body elem
+                                          :hash (new-number)
+                                          :rule nil))))
+                      multi-b (doall (apply concat (map build-multi (rest new-res))))
                        a (assoc old-a :rule (cons (:name rule) (concat
-                                                                 (butlast (butlast hashes))
-                                                                 (map
-                                                                   #(if (vector? %)
-                                                                      (list 'between (:hash (first %)) (:hash (last %)))
-                                                                      (:hash %))
-                                                                   (filter #(not= :todo (:body %)) multi-b)))))]
-                   (postwalk-replace
-                     {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before multi-b todo-siblings-after)))}
-                     proof))
+                                                                (butlast (butlast hashes))
+                                                                (map
+                                                                  #(if (vector? %)
+                                                                     (list 'between (:hash (first %)) (:hash (last %)))
+                                                                     (:hash %))
+                                                                  (filter #(not= :todo (:body %)) multi-b)))))]
+                  (postwalk-replace
+                    {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before multi-b todo-siblings-after)))}
+                    proof))
                  
                  ; single element
-                 (if (= new-res (:body (last todo-siblings-before)))
+                (if (= new-res (:body (last todo-siblings-before)))
                    ; (interim) solution
-                   (let [a (assoc old-a :rule (cons (:name rule) (concat
-                                                                   (butlast (butlast hashes))
-                                                                   (list (:hash (last todo-siblings-before))))))]
+                  (let [a (assoc old-a :rule (cons (:name rule) (concat
+                                                                  (butlast (butlast hashes))
+                                                                  (list (:hash (last todo-siblings-before))))))]
                      (postwalk-replace
                        {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before todo-siblings-after)))}
                        proof))
                    
                    ; new insertion
-                   (let [b {:body new-res
+                  (let [b {:body new-res
                             :hash (new-number)
                             :rule nil}
                          a (assoc old-a :rule (cons (:name rule) (concat
-                                                                   (butlast (butlast hashes))
-                                                                   (list (:hash b)))))]
+                                                                  (butlast (butlast hashes))
+                                                                  (list (:hash b)))))]
                      (postwalk-replace
                        {todo-siblings (postwalk-replace {old-a a} (vec (concat todo-siblings-before (list todo b) todo-siblings-after)))}
                        proof))))))))))))
