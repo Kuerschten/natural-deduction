@@ -206,8 +206,10 @@
         todo-index (.indexOf elems todo)]
     (cond
       (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong lines."))
-      (not= (dec (count elems)) (count args)) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
+      (not= 1 (count (filter #(= % :todo) (map :body elems)))) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
       (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
+      (and forward? (not= :todo (last (map :body elems)))) (throw (IllegalArgumentException. "Proof obligation is on the wrong place. It should be the last line"))
+      (and (not forward?) (not= :todo (last (butlast (map :body elems))))) (throw (IllegalArgumentException. "Proof obligation is on the wrong place. It should be the line before last"))
       
       :else ;; Build next proof
     (let [rules (let [precedence (:precedence rule)]
@@ -222,8 +224,8 @@
           todo-siblings (inner-proof todo proof)
           todo-siblings-before (subvec todo-siblings 0 (.indexOf todo-siblings todo))
           todo-siblings-after (subvec todo-siblings (inc (.indexOf todo-siblings todo)))]
-      (when new-res (cond
-          (= todo (last elems))
+      (when new-res
+        (if forward?
           ; forward
           (let [b  {:body new-res
                               :hash nil
@@ -239,7 +241,6 @@
                           {todo-siblings (vec (concat todo-siblings-before (list (assoc b :hash (new-number)) todo) todo-siblings-after))}
                           proof)))
                     
-           :else
           ;backward
           (if (and (coll? new-res) (or (contains? (set new-res) '⊢) (contains? (set new-res) 'INFER)))
              ; ... a -> b a (sub-proof)

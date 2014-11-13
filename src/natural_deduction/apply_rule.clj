@@ -67,7 +67,7 @@
       (coll? form) (if quoted? (list 'list (list 'seq (concat '(concat) rewrited-form))) (list 'seq (concat '(concat) (map #(rewrite % true) form))))
       :else (if quoted? (list 'list (list 'quote form)) (list 'quote form)))))
 
-(defn- apply-rule-rewrite ; TODO - auf neue Regeldefinition umbauen
+(defn- apply-rule-rewrite
   "Rewrite an unrewrited(!) rule form to function that uses core.logic.
    Returns a String."
   [rule]

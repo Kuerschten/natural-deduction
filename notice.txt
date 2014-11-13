@@ -21,6 +21,7 @@ Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction fo
  - i:<>A INFER i<=j j:A (<>-elim)
 
 apply-rule-1step umbenennen? wie?
+Funktion für fix-elements -> fix-elements automatisch herausfinden???
 
 =====
 

@@ -36,8 +36,11 @@ stop
 
 (pretty-printer
   (-> (build-proof '[INFER (¬ a)])
-    (proof-step-backward (get-rule master-file "not-i") 1 2)
-    ))
+    (proof-step-backward (get-rule master-file "not-i") 1 2)))
+
+(pretty-printer
+  (-> (build-proof '[a INFER (a ∨ b)])
+    (proof-step-backward (get-rule master-file "or-i-left") 2 3)))
 
 ; inside
 (pretty-printer (proof-step-backward
