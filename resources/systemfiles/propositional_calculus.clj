@@ -4,7 +4,7 @@
  :rules
  (; SAME
 	{:name "same"
-	 :precedence [$a]
+	 :premise [$a]
 	 :consequence $b
 	 :forms [[$a $b]]
 	 :forward true
@@ -12,25 +12,25 @@
 	
   ; AND
 	{:name "and-e-left"
-	 :precedence [$and]
+	 :premise [$and]
 	 :consequence $a
 	 :forms [[$and ($a ∧ $b)]]
 	 :forward true}
 	
 	{:name "and-e-right"
-	 :precedence [$and]
+	 :premise [$and]
 	 :consequence $b
 	 :forms [[$and ($a ∧ $b)]]
 	 :forward true}
 	
 	{:name "and-i"
-	 :precedence [$a $b]
+	 :premise [$a $b]
 	 :consequence $and
 	 :forms [[$and ($a ∧ $b)]]
 	 :forward true}
 	
 	{:name "and-i-backward"
-	 :precedence [$ab]
+	 :premise [$ab]
 	 :consequence $and
 	 :forms [[$and ($a ∧ $b)]
            [$ab (multiple-introductions $a $b)]]
@@ -38,21 +38,21 @@
 	
   ; OR
 	{:name "or-e"
-	 :precedence [$or $proofs]
+	 :premise [$or $proofs]
 	 :consequence $X
 	 :forms [[$or ($a ∨ $b)]
 	         [$proofs (multiple-introductions ($a ⊢ $X)($b ⊢ $X))]]
 	 :backward true}
 	
 	{:name "or-i-left"
-	 :precedence [$a]
+	 :premise [$a]
 	 :consequence $or
 	 :forms [[$or ($a ∨ $b)]]
 	 :forward true
 	 :backward true}
 	
 	{:name "or-i-right"
-	 :precedence [$b]
+	 :premise [$b]
 	 :consequence $or
 	 :forms [[$or ($a ∨ $b)]]
 	 :forward true
@@ -60,13 +60,13 @@
 	
   ; IMPL
 	{:name "impl-e"
-	 :precedence [$a $impl]
+	 :premise [$a $impl]
 	 :consequence $b
 	 :forms [[$impl ($a → $b)]]
 	 :forward true}
 	
 	{:name "impl-i"
-	 :precedence [$proof]
+	 :premise [$proof]
 	 :consequence $impl
 	 :forms [[$proof ($a ⊢ $b)]
 	         [$impl ($a → $b)]]
@@ -74,7 +74,7 @@
 	
   ; NOT
 	{:name "not-e"
-	 :precedence [$a $not]
+	 :premise [$a $not]
 	 :consequence $contradiction
 	 :forms [[$not (¬ $a)]
 	         [$contradiction ⊥]]
@@ -82,7 +82,7 @@
 	 :backward true}
 	
 	{:name "not-i"
-	 :precedence [$proof]
+	 :premise [$proof]
 	 :consequence $res
 	 :forms [[$proof ($a ⊢ ⊥)]
 	         [$res (¬ $a)]]
@@ -90,14 +90,14 @@
 	
   ; RAA, ⊥
 	{:name "efq"
-	 :precedence [$contradiction]
+	 :premise [$contradiction]
 	 :consequence $a
 	 :forms [[$contradiction ⊥]]
 	 :forward true
 	 :backward true}
 	
 	{:name "raa"
-	 :precedence [$proof]
+	 :premise [$proof]
 	 :consequence $a
 	 :forms [[$proof ((¬ $a) ⊢ ⊥)]]
 	 :backward true})}

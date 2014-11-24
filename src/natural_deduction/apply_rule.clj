@@ -37,7 +37,7 @@
                           )))
            args (map first forms)]
       {:name name
-       :precedence (vec (butlast args))
+       :premise (vec (butlast args))
        :consequence (last args)
        :forms (vec forms)
        :forward (not (nil? (last (map first forms))))
@@ -71,7 +71,7 @@
   "Rewrite an unrewrited(!) rule form to function that uses core.logic.
    Returns a String."
   [rule]
-  (let [args (conj (:precedence rule) (:consequence rule))
+  (let [args (conj (:premise rule) (:consequence rule))
         forms (:forms rule)
         vars (vec (set (filter
                          #(and
@@ -87,8 +87,8 @@
    Terms is a collection of all terms.
    Return the result of the therms while using the rule."
   [forward? rule terms]
- (let [movement (if forward? (:consequence rule) (last (:precedence rule)))
-       args (conj (:precedence rule) (:consequence rule))]
+ (let [movement (if forward? (:consequence rule) (last (:premise rule)))
+       args (conj (:premise rule) (:consequence rule))]
    (when (and
            movement
            (= (inc (count terms)) (count args)))

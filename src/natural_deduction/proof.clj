@@ -129,13 +129,13 @@
   "Prints all loaded rules that runs forward."
   [master-file-hash-map]
   (let [rules (:rules master-file-hash-map)]
-    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :forward rules)))))
+    (pp/print-table '(name premise consequence) (map #(hash-map 'name (:name %) 'premise (:premise %) 'consequence (:consequence %)) (filter :forward rules)))))
 
 (defn show-all-backward-rules
   "Prints all loaded rules that runs backward."
   [master-file-hash-map]
   (let [rules (:rules master-file-hash-map)]
-    (pp/print-table '(name precedence consequence) (map #(hash-map 'name (:name %) 'precedence (:precedence %) 'consequence (:consequence %)) (filter :backward rules)))))
+    (pp/print-table '(name premise consequence) (map #(hash-map 'name (:name %) 'premise (:premise %) 'consequence (:consequence %)) (filter :backward rules)))))
 
 (defn- update-proof
   [proof new-step]
@@ -212,9 +212,9 @@
       (and (not forward?) (not= :todo (last (butlast (map :body elems))))) (throw (IllegalArgumentException. "Proof obligation is on the wrong place. It should be the line before last"))
       
       :else ;; Build next proof
-    (let [rules (let [precedence (:precedence rule)]
-                  (map #(assoc rule :precedence (vec %))
-                       (combo/permutations precedence)))
+    (let [rules (let [premise (:premise rule)]
+                  (map #(assoc rule :premise (vec %))
+                       (combo/permutations premise)))
           res (filter #(not= nil %) (map #(apply-rule-1step forward? % args) rules))
           news (when res (filter #(re-find #"_[0-9]+" (str %)) (flatten res))) ; Elements like _0 are new elements.
           nres (if (coll? res) (list* (when res (prewalk-replace (zipmap news (map (fn [_] (with-meta (symbol (str "new" (new-number))) {:unifiable? true})) news)) res))) res)
