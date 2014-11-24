@@ -1,19 +1,19 @@
 (ns natural-deduction.core)
 
 (defn- predicate?
-  [elem fix-elements]
+  [elem terminals]
   (and
     (coll? elem)
     (symbol? (first elem))
-    (not (contains? (set fix-elements) (first elem)))
+    (not (contains? (set terminals) (first elem)))
     (coll? (second elem))
     (= 2 (count elem))))
 
 (defn theorem2rule
   [master-file-hash-map theorem-name]
   (let [theorem (get-theorem master-file-hash-map theorem-name)
-        fix-elements (:fix-elements master-file-hash-map)
-        raw-theorem (prewalk #(if (predicate? % fix-elements)
+        terminals (:terminals master-file-hash-map)
+        raw-theorem (prewalk #(if (predicate? % terminals)
                                 (symbol (str %))
                                 %)
                              (:hypothesis theorem))
@@ -25,7 +25,7 @@
          (not (contains? bodies :todo)))
       
      ; theorem is proofed -> reform raw-theorem
-     (let [replacement-map (zipmap (distinct (filter #(not (contains? fix-elements %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
+     (let [replacement-map (zipmap (distinct (filter #(not (contains? terminals %)) (flatten raw-theorem))) (map #(read-string (str "$" %)) (range)))
            forms (postwalk-replace
                    replacement-map
                    (vec (map

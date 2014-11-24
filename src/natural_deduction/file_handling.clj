@@ -15,7 +15,7 @@
         proofsystems (map
                        #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
                        (:proofsystems master-file))
-        fix-elements (set (conj (apply concat (map :fix-elements proofsystems)) 'substitution '⊢ 'INFER))
+        terminals (set (conj (apply concat (map :terminals proofsystems)) 'substitution '⊢ 'INFER))
         rules (apply list (distinct (apply concat (map :rules proofsystems))))
         hypotheses (apply concat (map
                                  #(read-string (slurp (path-conformer (apply str (interpose "/" (conj (vec (butlast (clojure.string/split file-path #"/"))) %))))))
@@ -24,7 +24,7 @@
         theorems (try
                    (read-string (slurp theorems-file))
                    (catch Exception e (if (= java.io.FileNotFoundException (class e)) nil e)))]
-    {:fix-elements fix-elements
+    {:terminals terminals
      :rules rules
      :hypotheses hypotheses
      :theorems theorems

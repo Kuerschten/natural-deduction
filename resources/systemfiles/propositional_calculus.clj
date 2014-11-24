@@ -1,4 +1,4 @@
-{:fix-elements
+{:terminals
  (∧ ∨ → ¬ ⊥)
 
  :rules

@@ -4,4 +4,6 @@
   :hypothesis [INFER (P ∨ (¬ P))]}
   
   {:name "16.f"
-   :hypothesis [(P → Q) ((¬ P) → Q) INFER Q]})
+   :hypothesis [(P → Q) ((¬ P) → Q) INFER Q]}
+  {:name "TND"
+   :hypothesis [INFER (P ∨ (¬ P))]})
