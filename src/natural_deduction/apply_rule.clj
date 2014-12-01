@@ -81,7 +81,7 @@
         equals (map #(list 'clojure.core.logic/== (rewrite (first %) false) (rewrite (second %) false)) forms)]
     (list 'fn args (concat (list 'clojure.core.logic/fresh) (list vars) equals))))
 
-(defn- apply-rule-1step ; TODO - auf neue Regeldefinition umbauen
+(defn- apply-rule-1step
   "Use an unrewrited(!) rule on terms.
    The rule can be used forward or backward (flag forward?).
    Terms is a collection of all terms.
