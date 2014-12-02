@@ -1,30 +1,3 @@
-:todo -> proofobligation
-rule args -> antecedent-steps (or-e #2)
-
-(tex-Output: beweise) -> Bachelorarbeit
-
-=====
-
-Beispielbeweise
-
-(apply_rule erweitern, dass direkt core-logic code benutzt werden kann)
-
-Vorschläge GUI darstellung Beweis:
- - Baumstruktur
- - Wie Jape
- - Andere Oberflächen
- - wenn zeitlich zu knapp keine GUI
-
-Entwickler von Jape - sein Code ist unwartbar ... Zitat suchen!!!
-
-Temporale Logik: Alexander Bolotov - Simpler Formulation of natural deduction for LTL
- - i:<>A INFER i<=j j:A (<>-elim)
-
-apply-rule-1step umbenennen? wie?
-Funktion für fix-elements -> fix-elements automatisch herausfinden???
-
-=====
-
 Beweissystem:
  * Regeln
  * Fixe Elemente
