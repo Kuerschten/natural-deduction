@@ -10,8 +10,4 @@
              (is (= [a b] (build-proof '[a b])))
              (is (= [a [b]] (build-proof '[a [b]])))
              (is (= [a {:body :todo, :hash 2, :rule nil} c] (build-proof '[a ⊢ c]))))))
-
-#_(deftest build-pretty-string-test
-  (testing "Build Pretty String"
-           (is (= "a\t(#1\t:premise)" (build-pretty-string {:body 'a, :hash 1, :rule :premise})))))
              
