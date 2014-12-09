@@ -217,6 +217,21 @@ stop
     (unify 9 'new18 'Q)
     ))
 
+; 18.a
+(pretty-printer
+  (-> (build-proof '[INFER (((P → Q) → P) → P)])
+    (proof-step-backward (get-rule master-file "impl-i") 1 2)
+    (proof-step-backward (get-rule master-file "raa") 2 3)
+    (proof-step-backward (get-rule master-file "not-e") 2 3 4)
+    (choose-option 4 2)
+    (proof-step-backward (get-rule master-file "impl-e") 1 3 4)
+    (choose-option 4 2)
+    (proof-step-backward (get-rule master-file "impl-i") 3 4)
+    (proof-step-forward (get-rule master-file "not-e") 2 3 4)
+    (proof-step-forward (get-rule master-file "efq") 4 5)
+    (unify 5 'new15 'Q)
+    ))
+
 ; predicate logic
 
 (pretty-printer

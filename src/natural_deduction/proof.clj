@@ -168,18 +168,18 @@
   [proof line old new]
   (let [hash (line2hash proof line)
         choosed-step (first (filter #(= hash (:hash %)) (flatten proof)))
-        marked-steps (filter #(contains? (set (flatten (:body %))) old) (flatten (inner-proof choosed-step proof)))]
+        marked-steps (filter #(contains? (set (flatten (if (coll? (:body %)) (:body %) (list (:body %))))) old) (flatten (inner-proof choosed-step proof)))]
     (loop
-      [p proof
-       ms marked-steps]
-      (if (= (count ms) 0)
-        p
-        (let [old-step (first ms)
-              elem (first (filter #(= old %) (set (flatten (:body old-step)))))
-              new-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))]
-          (if (unifiable? elem)
-            (recur (update-proof p new-step) (rest ms))
-            (recur p (rest ms))))))))
+    [p proof
+     ms marked-steps]
+    (if (= (count ms) 0)
+      p
+      (let [old-step (first ms)
+            elem (first (filter #(= old %) (set (flatten (if (coll? (:body old-step)) (:body old-step) (list (:body old-step)))))))
+            new-step (assoc old-step :body (postwalk-replace {old new} (:body old-step)))]
+        (if (unifiable? elem)
+         (recur (update-proof p new-step) (rest ms))
+         (recur p (rest ms))))))))
 
 (defn choose-option
   [proof line option]
