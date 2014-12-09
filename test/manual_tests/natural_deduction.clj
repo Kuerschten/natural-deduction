@@ -229,8 +229,56 @@ stop
     (proof-step-backward (get-rule master-file "impl-i") 3 4)
     (proof-step-forward (get-rule master-file "not-e") 2 3 4)
     (proof-step-forward (get-rule master-file "efq") 4 5)
-    (unify 5 'new15 'Q)
-    ))
+    (unify 5 'new15 'Q)))
+
+; 18.b
+(pretty-printer
+  (-> (build-proof '[(¬ (P ∧ Q)) INFER ((¬ P) ∨ (¬ Q))])
+    (proof-step-backward (get-rule master-file "raa") 2 3)
+    (proof-step-backward (get-rule master-file "not-e") 1 3 4)
+    (choose-option 4 2)
+    (proof-step-backward (get-rule master-file "and-i-backward") 3 4)
+    (proof-step-backward (get-rule master-file "raa") 3 4)
+    (proof-step-forward (get-rule master-file "or-i-left") 3 4)
+    (unify 4 'new15 '(¬ Q))
+    (proof-step-forward (get-rule master-file "not-e") 2 4 5)
+    (proof-step-backward (get-rule master-file "raa") 7 8)
+    (proof-step-forward (get-rule master-file "or-i-right") 7 8)
+    (unify 8 'new20 '(¬ P))
+    (proof-step-forward (get-rule master-file "not-e") 2 8 9)))
+
+; 18.c
+(pretty-printer
+  (-> (build-proof '[((¬ P) ∨ (¬ Q)) INFER (¬ (P ∧ Q))])
+    (proof-step-backward (get-rule master-file "not-i") 2 3)
+    (proof-step-forward (get-rule master-file "and-e-left") 2 3)
+    (proof-step-forward (get-rule master-file "and-e-right") 2 4)
+    (proof-step-backward (get-rule master-file "or-e") 1 5 6)
+    (proof-step-forward (get-rule master-file "not-e") 3 5 6)
+    (proof-step-forward (get-rule master-file "not-e") 4 7 8)))
+
+; 18.d
+(pretty-printer
+  (-> (build-proof '[(¬ (P ∨ Q)) INFER ((¬ P) ∧ (¬ Q))])
+    (proof-step-backward (get-rule master-file "and-i-backward") 2 3)
+    (proof-step-backward (get-rule master-file "not-i") 2 3)
+    (proof-step-forward (get-rule master-file "or-i-left") 2 3)
+    (unify 3 'new11 'Q)
+    (proof-step-forward (get-rule master-file "not-e") 1 3 4)
+    (proof-step-backward (get-rule master-file "not-i") 6 7)
+    (proof-step-forward (get-rule master-file "or-i-right") 6 7)
+    (unify 7 'new16 'P)
+    (proof-step-forward (get-rule master-file "not-e") 1 7 8)))
+
+; 18.e
+(pretty-printer
+  (-> (build-proof '[((¬ P) ∧ (¬ Q)) INFER (¬ (P ∨ Q))])
+    (proof-step-forward (get-rule master-file "and-e-left") 1 2)
+    (proof-step-forward (get-rule master-file "and-e-right") 1 3)
+    (proof-step-backward (get-rule master-file "not-i") 4 5)
+    (proof-step-backward (get-rule master-file "or-e") 4 5 6)
+    (proof-step-forward (get-rule master-file "not-e") 2 5 6)
+    (proof-step-forward (get-rule master-file "not-e") 3 7 8)))
 
 ; predicate logic
 
