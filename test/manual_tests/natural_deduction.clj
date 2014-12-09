@@ -300,3 +300,31 @@ stop
     (proof-step-forward (get-rule master-file "all-e") 1 2 4)
     (proof-step-forward (get-rule master-file "all-e") 3 4 5)
   ))
+
+; 13.a
+(pretty-printer
+  (-> (build-proof '[(∃ x (S → (Q(x)))) INFER (S → (∃ x (Q(x))))])
+    (proof-step-backward (get-rule master-file "impl-i") 2 3)
+    (proof-step-backward (get-rule master-file "exists-e") 1 3 4)
+    (proof-step-forward (get-rule master-file "impl-e") 2 4 5)
+    (proof-step-backward (get-rule master-file "exists-i") 3 6 7)))
+
+; 13.b
+(pretty-printer
+  (-> (build-proof '[(¬ (∀ x (¬ (P(x))))) INFER (∃ x (P(x)))])
+    (proof-step-backward (get-rule master-file "raa") 2 3)
+    (proof-step-backward (get-rule master-file "not-e") 1 3 4)
+    (choose-option 4 2)
+    (proof-step-backward (get-rule master-file "all-i") 3 4)
+    (proof-step-backward (get-rule master-file "not-i") 4 5)
+    (proof-step-backward (get-rule master-file "not-e") 2 5 6)
+    (choose-option 6 2)
+    (proof-step-backward (get-rule master-file "exists-i")3 5 6)))
+
+; 13.d
+(pretty-printer
+  (-> (build-proof '[(S → (∀ x (Q(x)))) INFER (∀ x (S → (Q(x))))])
+    (proof-step-backward (get-rule master-file "all-i") 2 3)
+    (proof-step-backward (get-rule master-file "impl-i") 3 4)
+    (proof-step-forward (get-rule master-file "impl-e") 1 3 4)
+    (proof-step-forward (get-rule master-file "all-e") 2 4 5)))
