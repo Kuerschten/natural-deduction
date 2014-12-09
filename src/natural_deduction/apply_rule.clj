@@ -82,20 +82,20 @@
     (list 'fn args (concat (list 'clojure.core.logic/fresh) (list vars) equals))))
 
 (defn- apply-rule-1step
-  "Use an unrewrited(!) rule on terms.
+  "Use an unrewrited(!) rule on formulas.
    The rule can be used forward or backward (flag forward?).
-   Terms is a collection of all terms.
+   formulas is a collection of all formulas.
    Return the result of the therms while using the rule."
-  [forward? rule terms]
+  [forward? rule formulas]
  (let [movement (if forward? (:consequence rule) (last (:premise rule)))
        args (conj (:premise rule) (:consequence rule))]
    (when (and
            movement
-           (= (inc (count terms)) (count args)))
+           (= (inc (count formulas)) (count args)))
      (let [r (apply-rule-rewrite rule)
            h1 (replace {movement 'q} args)
-           new-terms (replace (zipmap (filter #(not= 'q %) h1) (map #(list 'quote %) terms)) h1)
-           function (list 'clojure.core.logic/run 1 '[q] (concat (list r) new-terms))
+           new-formulas (replace (zipmap (filter #(not= 'q %) h1) (map #(list 'quote %) formulas)) h1)
+           function (list 'clojure.core.logic/run 1 '[q] (concat (list r) new-formulas))
            res (first (eval function))]
        (postwalk
          (fn [x]
@@ -106,13 +106,13 @@
          res)))))
 
 (defn apply-rule-forward
-  "Use an unrewrited(!) rule on terms.
+  "Use an unrewrited(!) rule on formulas.
    Return the result of the therms while using the rule forward."
-  [rule & terms]
-  (apply-rule-1step true rule terms))
+  [rule & formulas]
+  (apply-rule-1step true rule formulas))
 
 (defn apply-rule-backward
-  "Use an unrewrited(!) rule on terms.
+  "Use an unrewrited(!) rule on formulas.
    Return the result of the therms while using the rule backward."
-  [rule & terms]
-  (apply-rule-1step false rule terms))
+  [rule & formulas]
+  (apply-rule-1step false rule formulas))

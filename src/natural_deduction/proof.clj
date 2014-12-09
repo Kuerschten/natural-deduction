@@ -198,7 +198,7 @@
                          (flatten proof)))
         todo (first (filter #(= (:body %) :todo) elems))
         args (map :body (filter #(not= todo %) elems))
-        elemts-in-scope? (every? true? (map
+        elems-in-scope? (every? true? (map
                                          (fn [x] (some
                                                    (fn [y] (= x y))
                                                    (scope-from proof todo)))
@@ -207,7 +207,7 @@
     (cond
       (not= (count hashes) (count elems)) (throw (IllegalArgumentException. "Double used or wrong lines."))
       (not= 1 (count (filter #(= % :todo) (map :body elems)))) (throw (IllegalArgumentException. "Wrong number of proof obligations (\"...\") is chosen. Please choose one proof obligation."))
-      (not elemts-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
+      (not elems-in-scope?) (throw (IllegalArgumentException. "At least one element is out of scope."))
       (and forward? (not= :todo (last (map :body elems)))) (throw (IllegalArgumentException. "Proof obligation is on the wrong place. It should be the last line"))
       (and (not forward?) (not= :todo (last (butlast (map :body elems))))) (throw (IllegalArgumentException. "Proof obligation is on the wrong place. It should be the line before last"))
       
